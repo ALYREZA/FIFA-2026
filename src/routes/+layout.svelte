@@ -4,6 +4,7 @@
 	import { page } from '$app/state';
 	import { locales, localizeHref } from '$lib/paraglide/runtime';
 	import { initTelegramWebApp, isTelegramWebApp } from '$lib/telegram/webapp';
+	import '$lib/flags/flag-icons-subset.css';
 	import './layout.css';
 	import favicon from '$lib/assets/favicon.svg';
 
