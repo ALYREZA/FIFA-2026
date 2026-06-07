@@ -35,6 +35,7 @@
 		"cookie": "./node_modules/cookie/index.js",
 		"set-cookie-parser": "./node_modules/set-cookie-parser/lib/set-cookie.js",
 		"svelte/store": "./node_modules/svelte/src/store/index-server.js",
-		"svelte": "./node_modules/svelte/src/index-server.js"
+		"svelte": "./node_modules/svelte/src/index-server.js",
+		"zod": "./node_modules/zod/index.js"
 	}
 }
