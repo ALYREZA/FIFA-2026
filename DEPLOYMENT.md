@@ -215,42 +215,22 @@ Used by Drizzle Kit for remote schema operations. **Not** injected into the Work
 | `DB` | D1 database — no secret needed, configured in `wrangler.jsonc` |
 | `ASSETS` | Static assets from the SvelteKit build |
 
-## CI/CD (optional)
+## CI/CD
 
-There is no GitHub Actions workflow in this repo yet. A typical pipeline:
+GitHub Actions workflow: [`.github/workflows/ci.yml`](./.github/workflows/ci.yml)
 
-1. Trigger on push to `main`
-2. `pnpm install --frozen-lockfile`
-3. `pnpm check && pnpm lint`
-4. `pnpm deploy` with `CLOUDFLARE_API_TOKEN` set in CI secrets
+| Trigger | Jobs |
+|---------|------|
+| Pull request | `check` — `pnpm check` + `pnpm lint` |
+| Push to `main` | `check`, then `deploy` — `pnpm deploy` |
 
-Create a Cloudflare API token with **Workers Scripts Edit** and **D1 Edit** permissions. Store it as `CLOUDFLARE_API_TOKEN` in your CI provider.
+### One-time setup
 
-Example GitHub Actions skeleton:
+1. Create a Cloudflare API token with **Workers Scripts Edit** (and **D1 Edit** if you run migrations in CI).
+2. In GitHub → **Settings** → **Secrets and variables** → **Actions**, add:
+   - `CLOUDFLARE_API_TOKEN` — the token from step 1
 
-```yaml
-name: Deploy
-on:
-  push:
-    branches: [main]
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm check
-      - run: pnpm deploy
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-```
-
-Worker secrets (`BETTER_AUTH_SECRET`, etc.) are stored in Cloudflare and persist across deploys — you do not need to pass them in CI unless you are deploying to a new Worker for the first time.
+Worker secrets (`BETTER_AUTH_SECRET`, `BALE_*`, `ORIGIN`, etc.) are stored in Cloudflare via `wrangler secret put` and persist across deploys — you do not need to pass them in CI unless you are deploying to a new Worker for the first time.
 
 ## Troubleshooting
 

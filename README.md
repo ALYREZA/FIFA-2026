@@ -27,6 +27,7 @@ This is **not** a betting app — no stakes, odds, real-money wallets, or cash p
 |-------|------------|
 | Framework | SvelteKit 2, Svelte 5 |
 | Deploy | Cloudflare Workers + D1 |
+| CI/CD | GitHub Actions (check, lint, deploy on `main`) |
 | Auth | better-auth (phone OTP) |
 | Database | Drizzle ORM + SQLite (D1) |
 | Styling | Tailwind CSS v4 |
@@ -176,6 +177,8 @@ src/
 │   └── (app)/                  # Protected app routes
 scripts/
 └── wrangler.mjs                # Wrangler wrapper (loads wrangler.jsonc)
+.github/workflows/
+└── ci.yml                        # GitHub Actions: check, lint, deploy
 migrations/                     # D1 SQL migrations
 messages/                       # Paraglide i18n (en.json, fa.json, …)
 wrangler.jsonc                  # Worker config, D1, module aliases
@@ -209,11 +212,24 @@ Stop the previous preview process, or run:
 node scripts/wrangler.mjs dev --port 4174
 ```
 
-## Deployment
+## Deployment & CI/CD
 
-Production runs on **Cloudflare Workers + D1**. See **[DEPLOYMENT.md](./DEPLOYMENT.md)** for the full guide.
+Production runs on **Cloudflare Workers + D1**. See **[DEPLOYMENT.md](./DEPLOYMENT.md)** for the full guide (D1 setup, secrets, custom domain, troubleshooting).
 
-Quick start:
+### GitHub Actions
+
+Workflow: [`.github/workflows/ci.yml`](./.github/workflows/ci.yml)
+
+| Trigger | What runs |
+|---------|-----------|
+| Pull request | `pnpm check` + `pnpm lint` |
+| Push to `main` | Check + lint, then `pnpm deploy` |
+
+**One-time setup:** add a `CLOUDFLARE_API_TOKEN` repository secret (Cloudflare API token with **Workers Scripts Edit**). Worker runtime secrets (`ORIGIN`, `BETTER_AUTH_SECRET`, `BALE_*`, `ADMIN_PHONE_NUMBERS`) are stored in Cloudflare via `wrangler secret put` and persist across deploys.
+
+### Manual deploy
+
+For first-time setup or ad-hoc deploys:
 
 ```sh
 node scripts/wrangler.mjs login
@@ -222,6 +238,8 @@ pnpm db:remote                                 # apply migrations to remote D1
 node scripts/wrangler.mjs secret put ORIGIN    # repeat for all secrets (see DEPLOYMENT.md)
 pnpm deploy
 ```
+
+After CI is configured, routine deploys happen automatically when you merge to `main`.
 
 ## License
 
