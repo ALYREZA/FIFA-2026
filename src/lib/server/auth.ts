@@ -5,6 +5,7 @@ import { sveltekitCookies } from 'better-auth/svelte-kit';
 import { env } from '$env/dynamic/private';
 import { getRequestEvent } from '$app/server';
 import { getDb } from '$lib/server/db';
+import { telegramMiniApp } from '$lib/server/auth/telegram-miniapp';
 import { sendBaleOtp } from '$lib/server/bale/safir';
 import { isValidBalePhone } from '$lib/server/phone';
 
@@ -23,6 +24,7 @@ const authConfig = ({
 		}
 	},
 	plugins: [
+		telegramMiniApp(),
 		phoneNumber({
 			otpLength: 6,
 			expiresIn: 300,

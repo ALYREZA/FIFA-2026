@@ -5,6 +5,12 @@
 	import { normalizeIranPhone } from '$lib/phone';
 	import { USERNAME_RULES } from '$lib/forecast/game-rules';
 	import LocaleSwitcher from '$lib/components/LocaleSwitcher.svelte';
+	import {
+		getTelegramInitData,
+		initTelegramWebApp,
+		isTelegramWebApp,
+		signInWithTelegram
+	} from '$lib/telegram/webapp';
 	import * as m from '$lib/paraglide/messages';
 
 	let { data, form } = $props();
@@ -12,15 +18,56 @@
 	let phoneInput = $state('');
 	let otpCode = $state('');
 	let usernameInput = $state('');
-	let step = $state<'phone' | 'otp' | 'username'>('phone');
+	let step = $state<'phone' | 'otp' | 'username' | 'telegram'>('phone');
 	let loading = $state(false);
 	let error = $state('');
+	let telegramSignInStarted = $state(false);
 
 	$effect.pre(() => {
 		if (data.needsUsername) {
 			step = 'username';
 		}
 	});
+
+	$effect(() => {
+		if (data.needsUsername || step === 'username') return;
+		if (!isTelegramWebApp() || telegramSignInStarted) return;
+
+		telegramSignInStarted = true;
+		step = 'telegram';
+		initTelegramWebApp();
+		void handleTelegramSignIn();
+	});
+
+	function redirectAfterLogin() {
+		const redirect = page.url.searchParams.get('redirect') ?? '';
+		const loginUrl = redirect
+			? `${resolve('/login')}?redirect=${encodeURIComponent(redirect)}`
+			: resolve('/login');
+		window.location.href = loginUrl;
+	}
+
+	async function handleTelegramSignIn() {
+		error = '';
+		loading = true;
+
+		const initData = getTelegramInitData();
+		if (!initData) {
+			error = m.login_telegram_failed();
+			loading = false;
+			return;
+		}
+
+		const result = await signInWithTelegram(initData);
+		loading = false;
+
+		if (!result.ok) {
+			error = result.message || m.login_telegram_failed();
+			return;
+		}
+
+		redirectAfterLogin();
+	}
 
 	function usernameErrorMessage(code: string | undefined) {
 		switch (code) {
@@ -89,11 +136,7 @@
 			return;
 		}
 
-		const redirect = page.url.searchParams.get('redirect') ?? '';
-		const loginUrl = redirect
-			? `${resolve('/login')}?redirect=${encodeURIComponent(redirect)}`
-			: resolve('/login');
-		window.location.href = loginUrl;
+		redirectAfterLogin();
 	}
 
 	function handleBack() {
@@ -114,6 +157,8 @@
 			<p class="mt-2 text-sm text-muted">
 				{#if step === 'username'}
 					{m.login_username_subtitle()}
+				{:else if step === 'telegram'}
+					{m.login_telegram_subtitle()}
 				{:else}
 					{m.login_subtitle()}
 				{/if}
@@ -178,6 +223,17 @@
 					{loading ? m.login_sending() : m.login_send_otp()}
 				</button>
 			</form>
+		{:else if step === 'telegram'}
+			<div class="space-y-4 py-6 text-center">
+				<p class="text-sm text-muted">
+					{loading ? m.login_telegram_signing_in() : m.login_telegram_subtitle()}
+				</p>
+				{#if !loading && error}
+					<button type="button" onclick={handleTelegramSignIn} class="btn-primary w-full py-3">
+						{m.login_telegram_retry()}
+					</button>
+				{/if}
+			</div>
 		{:else}
 			<form
 				onsubmit={(e) => {

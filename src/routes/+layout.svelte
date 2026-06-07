@@ -3,10 +3,17 @@
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import { locales, localizeHref } from '$lib/paraglide/runtime';
+	import { initTelegramWebApp, isTelegramWebApp } from '$lib/telegram/webapp';
 	import './layout.css';
 	import favicon from '$lib/assets/favicon.svg';
 
 	let { children } = $props();
+
+	$effect(() => {
+		if (isTelegramWebApp()) {
+			initTelegramWebApp();
+		}
+	});
 </script>
 
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>

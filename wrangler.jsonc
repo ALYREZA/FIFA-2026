@@ -3,6 +3,7 @@
 	"name": "fifa-2026",
 	"compatibility_date": "2026-06-07",
 	"compatibility_flags": [
+		"nodejs_compat",
 		"nodejs_als"
 	],
 	"main": ".svelte-kit/cloudflare/_worker.js",
@@ -19,11 +20,24 @@
 			"database_id": "00000000-0000-0000-0000-000000000001"
 		}
 	],
-	// Wrangler rebundles SvelteKit server output; alias kit internals so esbuild
-	// resolves them from node_modules (avoids Yarn PnP / monorepo resolution failures).
+	// Wrangler rebundles SvelteKit server output. Alias runtime deps to local
+	// node_modules paths so esbuild does not use a parent Yarn PnP manifest.
 	"alias": {
 		"@sveltejs/kit/internal/server": "./node_modules/@sveltejs/kit/src/exports/internal/server.js",
 		"@sveltejs/kit/internal": "./node_modules/@sveltejs/kit/src/exports/internal/index.js",
-		"@sveltejs/kit": "./node_modules/@sveltejs/kit/src/exports/index.js"
+		"@sveltejs/kit/hooks": "./node_modules/@sveltejs/kit/src/exports/hooks/index.js",
+		"@sveltejs/kit": "./node_modules/@sveltejs/kit/src/exports/index.js",
+		"drizzle-orm/sqlite-core": "./node_modules/drizzle-orm/sqlite-core/index.js",
+		"drizzle-orm/d1": "./node_modules/drizzle-orm/d1/index.js",
+		"drizzle-orm": "./node_modules/drizzle-orm/index.js",
+		"esm-env/development": "./node_modules/esm-env/false.js",
+		"esm-env/browser": "./node_modules/esm-env/false.js",
+		"esm-env/node": "./node_modules/esm-env/true.js",
+		"esm-env": "./node_modules/esm-env/index.js",
+		"devalue": "./node_modules/devalue/index.js",
+		"cookie": "./node_modules/cookie/index.js",
+		"set-cookie-parser": "./node_modules/set-cookie-parser/lib/set-cookie.js",
+		"svelte/store": "./node_modules/svelte/src/store/index-server.js",
+		"svelte": "./node_modules/svelte/src/index-server.js"
 	}
 }
