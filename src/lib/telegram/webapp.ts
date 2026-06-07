@@ -1,3 +1,5 @@
+import { initTelegramTheme } from '$lib/telegram/theme';
+
 export type TelegramWebAppUser = {
 	id: number;
 	first_name: string;
@@ -6,6 +8,23 @@ export type TelegramWebAppUser = {
 	language_code?: string;
 	is_premium?: boolean;
 	photo_url?: string;
+};
+
+export type TelegramThemeParams = {
+	bg_color?: string;
+	text_color?: string;
+	hint_color?: string;
+	link_color?: string;
+	button_color?: string;
+	button_text_color?: string;
+	secondary_bg_color?: string;
+	header_bg_color?: string;
+	accent_text_color?: string;
+	section_bg_color?: string;
+	section_header_text_color?: string;
+	subtitle_text_color?: string;
+	destructive_text_color?: string;
+	bottom_bar_bg_color?: string;
 };
 
 export type TelegramWebApp = {
@@ -19,9 +38,13 @@ export type TelegramWebApp = {
 	expand: () => void;
 	close: () => void;
 	colorScheme: 'light' | 'dark';
-	themeParams: Record<string, string | undefined>;
+	themeParams: TelegramThemeParams;
 	platform: string;
 	version: string;
+	setHeaderColor: (color: string) => void;
+	setBackgroundColor: (color: string) => void;
+	onEvent: (eventType: 'themeChanged', callback: () => void) => void;
+	offEvent: (eventType: 'themeChanged', callback: () => void) => void;
 };
 
 declare global {
@@ -42,11 +65,12 @@ export function getTelegramInitData(): string | null {
 	return window.Telegram!.WebApp.initData || null;
 }
 
-export function initTelegramWebApp(): void {
-	if (!isTelegramWebApp()) return;
+export function initTelegramWebApp(): (() => void) | undefined {
+	if (!isTelegramWebApp()) return undefined;
 	const webApp = window.Telegram!.WebApp;
 	webApp.ready();
 	webApp.expand();
+	return initTelegramTheme();
 }
 
 export async function signInWithTelegram(initData: string): Promise<{ ok: true } | { ok: false; message: string }> {

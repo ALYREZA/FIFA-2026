@@ -30,8 +30,51 @@
 	--on-accent: #ffffff;
 }
 
+html[data-telegram-theme] {
+	color-scheme: light;
+	--background: var(--tg-theme-bg-color);
+	--foreground: var(--tg-theme-text-color);
+	--muted: var(--tg-theme-hint-color);
+	--subtle: var(--tg-theme-subtitle-text-color, var(--tg-theme-hint-color));
+	--card: var(--tg-theme-section-bg-color, var(--tg-theme-secondary-bg-color));
+	--card-muted: var(--tg-theme-secondary-bg-color);
+	--border: var(--tg-theme-secondary-bg-color);
+	--header: var(--tg-theme-header-bg-color, var(--tg-theme-bg-color));
+	--header-border: var(--tg-theme-secondary-bg-color);
+	--accent: var(--tg-theme-button-color);
+	--accent-hover: var(--tg-theme-link-color);
+	--accent-text: var(--tg-theme-link-color);
+	--accent-muted: var(--tg-theme-secondary-bg-color);
+	--accent-subtle: var(--tg-theme-secondary-bg-color);
+	--warning-border: var(--tg-theme-hint-color);
+	--warning-bg: var(--tg-theme-secondary-bg-color);
+	--warning-text: var(--tg-theme-accent-text-color, var(--tg-theme-link-color));
+	--error-border: var(--tg-theme-destructive-text-color);
+	--error-bg: var(--tg-theme-secondary-bg-color);
+	--error-text: var(--tg-theme-destructive-text-color);
+	--admin: var(--tg-theme-accent-text-color, var(--tg-theme-link-color));
+	--highlight: var(--tg-theme-accent-text-color, var(--tg-theme-link-color));
+	--on-accent: var(--tg-theme-button-text-color);
+}
+
+html[data-telegram-theme][data-color-scheme='dark'] {
+	color-scheme: dark;
+}
+
+html[data-telegram-theme] .safe-area-top {
+	padding-top: max(0.75rem, env(safe-area-inset-top));
+}
+
+html[data-telegram-theme] .safe-area-bottom {
+	padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+}
+
+html[data-telegram-theme] .safe-area-x {
+	padding-inline: max(1rem, env(safe-area-inset-left), env(safe-area-inset-right));
+}
+
 @media (prefers-color-scheme: dark) {
-	:root {
+	:root:not([data-telegram-theme]) {
 		color-scheme: dark;
 		--background: #020617;
 		--foreground: #f1f5f9;

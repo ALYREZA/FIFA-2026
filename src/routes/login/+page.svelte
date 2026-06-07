@@ -5,12 +5,7 @@
 	import { normalizeIranPhone } from '$lib/phone';
 	import { USERNAME_RULES } from '$lib/forecast/game-rules';
 	import LocaleSwitcher from '$lib/components/LocaleSwitcher.svelte';
-	import {
-		getTelegramInitData,
-		initTelegramWebApp,
-		isTelegramWebApp,
-		signInWithTelegram
-	} from '$lib/telegram/webapp';
+	import { getTelegramInitData, isTelegramWebApp, signInWithTelegram } from '$lib/telegram/webapp';
 	import * as m from '$lib/paraglide/messages';
 
 	let { data, form } = $props();
@@ -35,7 +30,6 @@
 
 		telegramSignInStarted = true;
 		step = 'telegram';
-		initTelegramWebApp();
 		void handleTelegramSignIn();
 	});
 
@@ -146,8 +140,8 @@
 	}
 </script>
 
-<div class="flex min-h-screen items-center justify-center bg-background px-4">
-	<div class="absolute end-4 top-4">
+<div class="safe-area-x flex min-h-screen items-center justify-center bg-background">
+	<div class="safe-area-top absolute end-4">
 		<LocaleSwitcher />
 	</div>
 

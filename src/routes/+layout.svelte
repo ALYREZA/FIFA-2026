@@ -10,9 +10,8 @@
 	let { children } = $props();
 
 	$effect(() => {
-		if (isTelegramWebApp()) {
-			initTelegramWebApp();
-		}
+		if (!isTelegramWebApp()) return;
+		return initTelegramWebApp();
 	});
 </script>
 

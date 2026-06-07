@@ -29,7 +29,7 @@
 </script>
 
 <div class="min-h-screen bg-background text-foreground">
-	<header class="border-b border-header-border bg-header">
+	<header class="safe-area-top safe-area-x border-b border-header-border bg-header">
 		<div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
 			<div>
 				<a href={resolve('/dashboard')} class="text-lg font-bold text-accent-text">
@@ -93,7 +93,7 @@
 		</nav>
 	</header>
 
-	<main class="mx-auto max-w-6xl px-4 py-6">
+	<main class="safe-area-bottom safe-area-x mx-auto max-w-6xl py-6">
 		{@render children()}
 	</main>
 </div>
