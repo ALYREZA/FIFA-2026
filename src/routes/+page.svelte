@@ -43,7 +43,9 @@
 </script>
 
 <div class="min-h-screen bg-background text-foreground">
-	<header class="safe-area-top safe-area-x sticky top-0 z-10 border-b border-header-border bg-header/95 backdrop-blur">
+	<header
+		class="safe-area-top safe-area-x sticky top-0 z-10 border-b border-header-border bg-header/95 backdrop-blur"
+	>
 		<div class="mx-auto flex max-w-4xl items-center justify-between px-4 py-3">
 			<div>
 				<p class="text-lg font-bold text-accent-text">{m.app_title()}</p>
