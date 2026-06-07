@@ -1,0 +1,161 @@
+<script lang="ts">
+	import type { Pathname } from '$app/types';
+	import { resolve } from '$app/paths';
+	import { page } from '$app/state';
+	import { authClient } from '$lib/auth-client';
+	import { normalizeIranPhone } from '$lib/phone';
+
+	let phoneInput = $state('');
+	let otpCode = $state('');
+	let step = $state<'phone' | 'otp'>('phone');
+	let loading = $state(false);
+	let error = $state('');
+
+	async function handleSendOtp() {
+		error = '';
+		loading = true;
+
+		const normalized = normalizeIranPhone(phoneInput);
+		if (!normalized) {
+			error = 'Enter a valid Iranian mobile number (e.g. 0912...)';
+			loading = false;
+			return;
+		}
+
+		const result = await authClient.phoneNumber.sendOtp({ phoneNumber: normalized });
+
+		loading = false;
+
+		if (result.error) {
+			error = result.error.message ?? 'Failed to send OTP';
+			return;
+		}
+
+		step = 'otp';
+	}
+
+	async function handleVerifyOtp() {
+		error = '';
+		loading = true;
+
+		const normalized = normalizeIranPhone(phoneInput);
+		if (!normalized) {
+			error = 'Invalid phone number';
+			loading = false;
+			return;
+		}
+
+		const result = await authClient.phoneNumber.verify({
+			phoneNumber: normalized,
+			code: otpCode
+		});
+
+		loading = false;
+
+		if (result.error) {
+			error = result.error.message ?? 'Invalid OTP code';
+			return;
+		}
+
+		const redirect = (page.url.searchParams.get('redirect') ?? '/dashboard') as Pathname;
+		window.location.href = resolve(redirect);
+	}
+
+	function handleBack() {
+		step = 'phone';
+		otpCode = '';
+		error = '';
+	}
+</script>
+
+<div class="flex min-h-screen items-center justify-center bg-slate-950 px-4">
+	<div class="w-full max-w-md rounded-2xl border border-emerald-900/40 bg-slate-900 p-8 shadow-xl">
+		<div class="mb-8 text-center">
+			<h1 class="text-2xl font-bold text-emerald-400">FIFA 2026 Forecast</h1>
+			<p class="mt-2 text-sm text-slate-400">Sign in with Bale OTP</p>
+		</div>
+
+		{#if error}
+			<div class="mb-4 rounded-lg border border-red-900/50 bg-red-950/50 px-4 py-3 text-sm text-red-300">
+				{error}
+			</div>
+		{/if}
+
+		{#if step === 'phone'}
+			<form
+				onsubmit={(e) => {
+					e.preventDefault();
+					handleSendOtp();
+				}}
+				class="space-y-4"
+			>
+				<div>
+					<label for="phone" class="mb-1 block text-sm text-slate-300">Mobile number</label>
+					<input
+						id="phone"
+						type="tel"
+						bind:value={phoneInput}
+						placeholder="09123456789"
+						dir="ltr"
+						class="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 text-slate-100 placeholder:text-slate-500 focus:border-emerald-600 focus:outline-none"
+					/>
+					<p class="mt-1 text-xs text-slate-500">OTP is sent via Bale — you need a Bale account</p>
+				</div>
+
+				<button
+					type="submit"
+					disabled={loading}
+					class="w-full rounded-lg bg-emerald-600 py-3 font-medium text-white transition hover:bg-emerald-500 disabled:opacity-50"
+				>
+					{loading ? 'Sending...' : 'Send OTP'}
+				</button>
+			</form>
+		{:else}
+			<form
+				onsubmit={(e) => {
+					e.preventDefault();
+					handleVerifyOtp();
+				}}
+				class="space-y-4"
+			>
+				<p class="text-center text-sm text-slate-400">
+					Code sent to <span class="text-emerald-400" dir="ltr">{phoneInput}</span>
+				</p>
+
+				<div>
+					<label for="otp" class="mb-1 block text-sm text-slate-300">Verification code</label>
+					<input
+						id="otp"
+						type="text"
+						inputmode="numeric"
+						maxlength="6"
+						bind:value={otpCode}
+						placeholder="123456"
+						dir="ltr"
+						class="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 text-center text-2xl tracking-widest text-slate-100 focus:border-emerald-600 focus:outline-none"
+					/>
+				</div>
+
+				<button
+					type="submit"
+					disabled={loading || otpCode.length < 6}
+					class="w-full rounded-lg bg-emerald-600 py-3 font-medium text-white transition hover:bg-emerald-500 disabled:opacity-50"
+				>
+					{loading ? 'Verifying...' : 'Verify & Sign in'}
+				</button>
+
+				<button
+					type="button"
+					onclick={handleBack}
+					class="w-full text-sm text-slate-400 hover:text-emerald-400"
+				>
+					Change phone number
+				</button>
+			</form>
+		{/if}
+
+		<p class="mt-6 text-center text-xs text-slate-500">
+			This is a skill-based prediction game. No real money, stakes, or gambling.
+		</p>
+	</div>
+</div>

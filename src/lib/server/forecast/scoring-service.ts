@@ -1,0 +1,192 @@
+import { and, desc, eq, sql } from 'drizzle-orm';
+import type { Database } from '$lib/server/db';
+import { user } from '$lib/server/db/auth.schema';
+import {
+	groupStandingPredictions,
+	matchPredictions,
+	matches,
+	stages,
+	tournamentExtrasPredictions,
+	userScores
+} from '$lib/server/db/forecast.schema';
+import {
+	isCorrectResult,
+	isExactScore,
+	scoreGroupStandings,
+	scoreMatchPrediction,
+	scoreTournamentExtras,
+	type ScoringRules
+} from './rules';
+import { getActiveTournament, getTournamentStages, parseScoringRules } from './tournament';
+
+export async function scoreUserPredictions(db: Database, userId: string, tournamentId: string) {
+	const tournament = await getActiveTournament(db);
+	if (!tournament || tournament.id !== tournamentId) return;
+
+	const rules = parseScoringRules(tournament.scoringRules) as ScoringRules;
+	const tournamentStages = await getTournamentStages(db, tournamentId);
+	const stageTypeMap = new Map(tournamentStages.map((s) => [s.id, s.type]));
+
+	const userMatchPredictions = await db
+		.select({
+			prediction: matchPredictions,
+			match: matches
+		})
+		.from(matchPredictions)
+		.innerJoin(matches, eq(matchPredictions.matchId, matches.id))
+		.where(
+			and(eq(matchPredictions.userId, userId), eq(matches.tournamentId, tournamentId))
+		);
+
+	let matchPoints = 0;
+	let exactScores = 0;
+	let correctResults = 0;
+	let lastPredictionAt: Date | null = null;
+
+	for (const { prediction, match } of userMatchPredictions) {
+		if (match.status !== 'finished' || match.homeScore === null || match.awayScore === null) {
+			continue;
+		}
+
+		const stageType = stageTypeMap.get(match.stageId) ?? 'group';
+		const breakdown = scoreMatchPrediction(
+			stageType,
+			{ homeScore: prediction.homeScore, awayScore: prediction.awayScore },
+			{
+				homeScore: match.homeScore,
+				awayScore: match.awayScore,
+				winnerTeamId: match.winnerTeamId
+			},
+			match.homeTeamId,
+			match.awayTeamId,
+			rules
+		);
+
+		matchPoints += breakdown.total;
+		if (isExactScore(breakdown)) exactScores++;
+		if (isCorrectResult(breakdown)) correctResults++;
+
+		await db
+			.update(matchPredictions)
+			.set({ pointsEarned: breakdown.total, scoreBreakdown: breakdown })
+			.where(eq(matchPredictions.id, prediction.id));
+
+		if (!lastPredictionAt || prediction.updatedAt > lastPredictionAt) {
+			lastPredictionAt = prediction.updatedAt;
+		}
+	}
+
+	const standingRows = await db
+		.select()
+		.from(groupStandingPredictions)
+		.where(
+			and(
+				eq(groupStandingPredictions.userId, userId),
+				eq(groupStandingPredictions.tournamentId, tournamentId)
+			)
+		);
+
+	// Standing results would come from admin entry — placeholder empty for now
+	const standingBreakdown = scoreGroupStandings(
+		standingRows.map((r) => ({
+			groupId: r.groupId,
+			teamId: r.teamId,
+			predictedPosition: r.predictedPosition
+		})),
+		[],
+		rules
+	);
+	const standingPoints = standingBreakdown.total;
+
+	const [extras] = await db
+		.select()
+		.from(tournamentExtrasPredictions)
+		.where(
+			and(
+				eq(tournamentExtrasPredictions.userId, userId),
+				eq(tournamentExtrasPredictions.tournamentId, tournamentId)
+			)
+		)
+		.limit(1);
+
+	let extrasPoints = 0;
+	if (extras) {
+		// Actual results from admin — placeholder empty
+		const extrasBreakdown = scoreTournamentExtras(
+			{
+				championTeamId: extras.championTeamId,
+				runnerUpTeamId: extras.runnerUpTeamId,
+				topScorerName: extras.topScorerName,
+				darkHorseTeamId: extras.darkHorseTeamId
+			},
+			{
+				championTeamId: null,
+				runnerUpTeamId: null,
+				topScorerName: null,
+				darkHorseTeamId: null
+			},
+			rules
+		);
+		extrasPoints = extrasBreakdown.total;
+	}
+
+	const totalPoints = matchPoints + standingPoints + extrasPoints;
+	const now = new Date();
+
+	const [existing] = await db
+		.select()
+		.from(userScores)
+		.where(and(eq(userScores.userId, userId), eq(userScores.tournamentId, tournamentId)))
+		.limit(1);
+
+	if (existing) {
+		await db
+			.update(userScores)
+			.set({
+				totalPoints,
+				matchPoints,
+				standingPoints,
+				extrasPoints,
+				exactScores,
+				correctResults,
+				lastPredictionAt,
+				updatedAt: now
+			})
+			.where(eq(userScores.id, existing.id));
+	} else {
+		await db.insert(userScores).values({
+			id: crypto.randomUUID(),
+			userId,
+			tournamentId,
+			totalPoints,
+			matchPoints,
+			standingPoints,
+			extrasPoints,
+			exactScores,
+			correctResults,
+			lastPredictionAt,
+			updatedAt: now
+		});
+	}
+}
+
+export async function getLeaderboard(db: Database, tournamentId: string, limit = 50) {
+	return db
+		.select({
+			userId: userScores.userId,
+			name: user.name,
+			totalPoints: userScores.totalPoints,
+			exactScores: userScores.exactScores,
+			correctResults: userScores.correctResults,
+			lastPredictionAt: userScores.lastPredictionAt
+		})
+		.from(userScores)
+		.innerJoin(user, eq(userScores.userId, user.id))
+		.where(eq(userScores.tournamentId, tournamentId))
+		.orderBy(
+			desc(userScores.totalPoints),
+			desc(userScores.exactScores),
+			sql`COALESCE(${userScores.lastPredictionAt}, 0) ASC`
+		)
+		.limit(limit);
+}
