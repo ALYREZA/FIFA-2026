@@ -1,11 +1,12 @@
 <script lang="ts">
+	import type { Pathname } from '$app/types';
 	import { resolve } from '$app/paths';
 	import * as m from '$lib/paraglide/messages';
 
 	let { data } = $props();
 
-	function profileHref(username: string) {
-		return resolve('/u/[username]', { username });
+	function profileHref(username: string): Pathname {
+		return `/u/${username}` as Pathname;
 	}
 </script>
 

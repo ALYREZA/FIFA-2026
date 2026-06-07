@@ -18,5 +18,12 @@
 			"database_name": "fifa-2026",
 			"database_id": "00000000-0000-0000-0000-000000000001"
 		}
-	]
+	],
+	// Wrangler rebundles SvelteKit server output; alias kit internals so esbuild
+	// resolves them from node_modules (avoids Yarn PnP / monorepo resolution failures).
+	"alias": {
+		"@sveltejs/kit/internal/server": "./node_modules/@sveltejs/kit/src/exports/internal/server.js",
+		"@sveltejs/kit/internal": "./node_modules/@sveltejs/kit/src/exports/internal/index.js",
+		"@sveltejs/kit": "./node_modules/@sveltejs/kit/src/exports/index.js"
+	}
 }

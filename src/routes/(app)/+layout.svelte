@@ -17,8 +17,8 @@
 		{ href: '/rules', label: m.nav_rules }
 	];
 
-	function profileHref(username: string) {
-		return resolve('/u/[username]', { username });
+	function profileHref(username: string): Pathname {
+		return `/u/${username}` as Pathname;
 	}
 
 	async function handleSignOut() {
