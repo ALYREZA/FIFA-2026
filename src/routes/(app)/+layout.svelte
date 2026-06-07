@@ -3,16 +3,18 @@
 	import { resolve } from '$app/paths';
 	import { authClient } from '$lib/auth-client';
 	import { formatPhoneDisplay } from '$lib/phone';
+	import LocaleSwitcher from '$lib/components/LocaleSwitcher.svelte';
+	import * as m from '$lib/paraglide/messages';
 
 	let { children, data } = $props();
 
-	const navItems: { href: Pathname; label: string }[] = [
-		{ href: '/dashboard', label: 'Dashboard' },
-		{ href: '/predict', label: 'Matches' },
-		{ href: '/standings', label: 'Standings' },
-		{ href: '/bracket', label: 'Bracket' },
-		{ href: '/extras', label: 'Extras' },
-		{ href: '/leaderboard', label: 'Leaderboard' }
+	const navItems: { href: Pathname; label: () => string }[] = [
+		{ href: '/dashboard', label: m.nav_dashboard },
+		{ href: '/predict', label: m.nav_matches },
+		{ href: '/standings', label: m.nav_standings },
+		{ href: '/bracket', label: m.nav_bracket },
+		{ href: '/extras', label: m.nav_extras },
+		{ href: '/leaderboard', label: m.nav_leaderboard }
 	];
 
 	async function handleSignOut() {
@@ -26,9 +28,9 @@
 		<div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
 			<div>
 				<a href={resolve('/dashboard')} class="text-lg font-bold text-emerald-400">
-					FIFA 2026 Forecast
+					{m.app_title()}
 				</a>
-				<p class="text-xs text-slate-400">Prediction game — not gambling</p>
+				<p class="text-xs text-slate-400">{m.app_tagline()}</p>
 			</div>
 
 			<nav class="hidden gap-1 md:flex">
@@ -37,14 +39,23 @@
 						href={resolve(item.href)}
 						class="rounded-lg px-3 py-2 text-sm text-slate-300 transition hover:bg-emerald-950 hover:text-emerald-300"
 					>
-						{item.label}
+						{item.label()}
 					</a>
 				{/each}
+				{#if data.isAdmin}
+					<a
+						href={resolve('/admin/matches')}
+						class="rounded-lg px-3 py-2 text-sm text-amber-400 transition hover:bg-amber-950"
+					>
+						{m.nav_admin()}
+					</a>
+				{/if}
 			</nav>
 
 			<div class="flex items-center gap-3">
+				<LocaleSwitcher />
 				{#if data.user?.phoneNumber}
-					<span class="hidden text-sm text-slate-400 sm:inline">
+					<span class="hidden text-sm text-slate-400 sm:inline" dir="ltr">
 						{formatPhoneDisplay(data.user.phoneNumber)}
 					</span>
 				{/if}
@@ -53,7 +64,7 @@
 					onclick={handleSignOut}
 					class="rounded-lg border border-slate-700 px-3 py-1.5 text-sm text-slate-300 hover:border-emerald-800 hover:text-emerald-300"
 				>
-					Sign out
+					{m.sign_out()}
 				</button>
 			</div>
 		</div>
@@ -64,7 +75,7 @@
 					href={resolve(item.href)}
 					class="whitespace-nowrap rounded-lg px-3 py-1.5 text-xs text-slate-300 hover:bg-emerald-950"
 				>
-					{item.label}
+					{item.label()}
 				</a>
 			{/each}
 		</nav>

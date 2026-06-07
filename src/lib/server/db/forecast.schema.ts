@@ -196,6 +196,46 @@ export const userScores = sqliteTable(
 	(table) => [unique('user_scores_user_tournament').on(table.userId, table.tournamentId)]
 );
 
+export const actualGroupStandings = sqliteTable(
+	'actual_group_standings',
+	{
+		id: text('id').primaryKey(),
+		tournamentId: text('tournament_id')
+			.notNull()
+			.references(() => tournaments.id, { onDelete: 'cascade' }),
+		groupId: text('group_id').notNull(),
+		teamId: text('team_id')
+			.notNull()
+			.references(() => teams.id, { onDelete: 'cascade' }),
+		actualPosition: integer('actual_position').notNull(),
+		updatedAt: integer('updated_at', { mode: 'timestamp_ms' })
+			.default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
+			.notNull()
+	},
+	(table) => [
+		unique('actual_standing_tournament_group_team').on(
+			table.tournamentId,
+			table.groupId,
+			table.teamId
+		)
+	]
+);
+
+export const actualTournamentExtras = sqliteTable('actual_tournament_extras', {
+	id: text('id').primaryKey(),
+	tournamentId: text('tournament_id')
+		.notNull()
+		.references(() => tournaments.id, { onDelete: 'cascade' })
+		.unique(),
+	championTeamId: text('champion_team_id').references(() => teams.id),
+	runnerUpTeamId: text('runner_up_team_id').references(() => teams.id),
+	topScorerName: text('top_scorer_name'),
+	darkHorseTeamId: text('dark_horse_team_id').references(() => teams.id),
+	updatedAt: integer('updated_at', { mode: 'timestamp_ms' })
+		.default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
+		.notNull()
+});
+
 export const tournamentsRelations = relations(tournaments, ({ many }) => ({
 	teams: many(teams),
 	stages: many(stages),

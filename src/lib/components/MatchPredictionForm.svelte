@@ -1,4 +1,6 @@
 <script lang="ts">
+	import * as m from '$lib/paraglide/messages';
+
 	type Team = { id: string; name: string; code: string; flagEmoji: string | null } | null;
 
 	let {
@@ -25,13 +27,13 @@
 
 	let home = $state(0);
 	let away = $state(0);
+	let saving = $state(false);
+	let message = $state('');
 
 	$effect(() => {
 		home = homeScore;
 		away = awayScore;
 	});
-	let saving = $state(false);
-	let message = $state('');
 
 	async function handleSubmit() {
 		if (locked) return;
@@ -39,7 +41,7 @@
 		message = '';
 		await onSubmit(matchId, home, away);
 		saving = false;
-		message = 'Saved';
+		message = m.match_saved();
 		setTimeout(() => (message = ''), 2000);
 	}
 </script>
@@ -48,7 +50,7 @@
 	<div class="mb-3 flex items-center justify-between text-xs text-slate-500">
 		<span>{kickoffAt.toLocaleString()}</span>
 		{#if locked}
-			<span class="text-amber-500">Locked</span>
+			<span class="text-amber-500">{m.match_locked()}</span>
 		{/if}
 	</div>
 
@@ -62,7 +64,7 @@
 				max="20"
 				bind:value={home}
 				disabled={locked}
-				class="ml-auto w-14 rounded-lg border border-slate-700 bg-slate-800 px-2 py-1 text-center disabled:opacity-50"
+				class="ms-auto w-14 rounded-lg border border-slate-700 bg-slate-800 px-2 py-1 text-center disabled:opacity-50"
 			/>
 		</div>
 
@@ -83,7 +85,7 @@
 	</div>
 
 	{#if isKnockout}
-		<p class="mt-2 text-xs text-slate-500">Knockout: no draws allowed</p>
+		<p class="mt-2 text-xs text-slate-500">{m.match_knockout_no_draw()}</p>
 	{/if}
 
 	<div class="mt-3 flex items-center justify-between">
@@ -98,7 +100,7 @@
 			onclick={handleSubmit}
 			class="rounded-lg bg-emerald-700 px-4 py-1.5 text-sm text-white hover:bg-emerald-600 disabled:opacity-50"
 		>
-			{saving ? 'Saving...' : 'Save'}
+			{saving ? m.match_saving() : m.match_save()}
 		</button>
 	</div>
 </div>

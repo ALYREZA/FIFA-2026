@@ -1,4 +1,4 @@
-import { redirect } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import { isAdmin } from '$lib/server/admin';
 import type { LayoutServerLoad } from './$types';
 
@@ -7,9 +7,9 @@ export const load: LayoutServerLoad = async ({ locals, url }) => {
 		redirect(303, `/login?redirect=${encodeURIComponent(url.pathname)}`);
 	}
 
-	return {
-		user: locals.user,
-		session: locals.session,
-		isAdmin: isAdmin(locals.user?.phoneNumber)
-	};
+	if (!isAdmin(locals.user?.phoneNumber)) {
+		error(403, 'Admin access required');
+	}
+
+	return { isAdmin: true };
 };

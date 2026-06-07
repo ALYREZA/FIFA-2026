@@ -4,6 +4,8 @@
 	import { page } from '$app/state';
 	import { authClient } from '$lib/auth-client';
 	import { normalizeIranPhone } from '$lib/phone';
+	import LocaleSwitcher from '$lib/components/LocaleSwitcher.svelte';
+	import * as m from '$lib/paraglide/messages';
 
 	let phoneInput = $state('');
 	let otpCode = $state('');
@@ -17,7 +19,7 @@
 
 		const normalized = normalizeIranPhone(phoneInput);
 		if (!normalized) {
-			error = 'Enter a valid Iranian mobile number (e.g. 0912...)';
+			error = m.login_invalid_phone();
 			loading = false;
 			return;
 		}
@@ -27,7 +29,7 @@
 		loading = false;
 
 		if (result.error) {
-			error = result.error.message ?? 'Failed to send OTP';
+			error = result.error.message ?? m.login_send_failed();
 			return;
 		}
 
@@ -40,7 +42,7 @@
 
 		const normalized = normalizeIranPhone(phoneInput);
 		if (!normalized) {
-			error = 'Invalid phone number';
+			error = m.login_invalid_phone();
 			loading = false;
 			return;
 		}
@@ -53,7 +55,7 @@
 		loading = false;
 
 		if (result.error) {
-			error = result.error.message ?? 'Invalid OTP code';
+			error = result.error.message ?? m.login_invalid_otp();
 			return;
 		}
 
@@ -69,10 +71,14 @@
 </script>
 
 <div class="flex min-h-screen items-center justify-center bg-slate-950 px-4">
+	<div class="absolute top-4 end-4">
+		<LocaleSwitcher />
+	</div>
+
 	<div class="w-full max-w-md rounded-2xl border border-emerald-900/40 bg-slate-900 p-8 shadow-xl">
 		<div class="mb-8 text-center">
-			<h1 class="text-2xl font-bold text-emerald-400">FIFA 2026 Forecast</h1>
-			<p class="mt-2 text-sm text-slate-400">Sign in with Bale OTP</p>
+			<h1 class="text-2xl font-bold text-emerald-400">{m.login_title()}</h1>
+			<p class="mt-2 text-sm text-slate-400">{m.login_subtitle()}</p>
 		</div>
 
 		{#if error}
@@ -90,16 +96,16 @@
 				class="space-y-4"
 			>
 				<div>
-					<label for="phone" class="mb-1 block text-sm text-slate-300">Mobile number</label>
+					<label for="phone" class="mb-1 block text-sm text-slate-300">{m.login_phone_label()}</label>
 					<input
 						id="phone"
 						type="tel"
 						bind:value={phoneInput}
-						placeholder="09123456789"
+						placeholder={m.login_phone_placeholder()}
 						dir="ltr"
 						class="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 text-slate-100 placeholder:text-slate-500 focus:border-emerald-600 focus:outline-none"
 					/>
-					<p class="mt-1 text-xs text-slate-500">OTP is sent via Bale — you need a Bale account</p>
+					<p class="mt-1 text-xs text-slate-500">{m.login_phone_hint()}</p>
 				</div>
 
 				<button
@@ -107,7 +113,7 @@
 					disabled={loading}
 					class="w-full rounded-lg bg-emerald-600 py-3 font-medium text-white transition hover:bg-emerald-500 disabled:opacity-50"
 				>
-					{loading ? 'Sending...' : 'Send OTP'}
+					{loading ? m.login_sending() : m.login_send_otp()}
 				</button>
 			</form>
 		{:else}
@@ -119,11 +125,11 @@
 				class="space-y-4"
 			>
 				<p class="text-center text-sm text-slate-400">
-					Code sent to <span class="text-emerald-400" dir="ltr">{phoneInput}</span>
+					{m.login_code_sent({ phone: phoneInput })}
 				</p>
 
 				<div>
-					<label for="otp" class="mb-1 block text-sm text-slate-300">Verification code</label>
+					<label for="otp" class="mb-1 block text-sm text-slate-300">{m.login_code_label()}</label>
 					<input
 						id="otp"
 						type="text"
@@ -141,7 +147,7 @@
 					disabled={loading || otpCode.length < 6}
 					class="w-full rounded-lg bg-emerald-600 py-3 font-medium text-white transition hover:bg-emerald-500 disabled:opacity-50"
 				>
-					{loading ? 'Verifying...' : 'Verify & Sign in'}
+					{loading ? m.login_verifying() : m.login_verify()}
 				</button>
 
 				<button
@@ -149,13 +155,11 @@
 					onclick={handleBack}
 					class="w-full text-sm text-slate-400 hover:text-emerald-400"
 				>
-					Change phone number
+					{m.login_change_phone()}
 				</button>
 			</form>
 		{/if}
 
-		<p class="mt-6 text-center text-xs text-slate-500">
-			This is a skill-based prediction game. No real money, stakes, or gambling.
-		</p>
+		<p class="mt-6 text-center text-xs text-slate-500">{m.login_disclaimer()}</p>
 	</div>
 </div>

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { invalidateAll } from '$app/navigation';
+	import * as m from '$lib/paraglide/messages';
 
 	let { data } = $props();
 
@@ -42,31 +43,31 @@
 		saving = false;
 
 		if (res.ok) {
-			message = 'Standings saved';
+			message = m.standings_saved();
 			await invalidateAll();
 		} else {
-			message = 'Failed to save';
+			message = m.standings_failed();
 		}
 	}
 </script>
 
 <div class="space-y-6">
 	<div>
-		<h1 class="text-2xl font-bold text-white">Group standings</h1>
-		<p class="mt-1 text-sm text-slate-400">
-			Predict final positions (1–4) for each team in every group.
-		</p>
+		<h1 class="text-2xl font-bold text-white">{m.standings_title()}</h1>
+		<p class="mt-1 text-sm text-slate-400">{m.standings_intro()}</p>
 	</div>
 
 	{#if data.extrasLocked}
 		<p class="rounded-lg border border-amber-900/40 bg-amber-950/30 px-4 py-3 text-sm text-amber-300">
-			Group standings are locked.
+			{m.standings_locked()}
 		</p>
 	{/if}
 
 	{#each data.groups ?? [] as group (group.id)}
 		<section class="rounded-xl border border-slate-800 bg-slate-900 p-6">
-			<h2 class="mb-4 text-lg font-semibold text-emerald-400">Group {group.id}</h2>
+			<h2 class="mb-4 text-lg font-semibold text-emerald-400">
+				{m.standings_group({ group: group.id })}
+			</h2>
 			<div class="space-y-3">
 				{#each group.teams as team (team.id)}
 					<div class="flex items-center justify-between rounded-lg bg-slate-800/50 px-4 py-3">
@@ -101,7 +102,7 @@
 			onclick={handleSave}
 			class="rounded-lg bg-emerald-600 px-6 py-2 text-white hover:bg-emerald-500 disabled:opacity-50"
 		>
-			{saving ? 'Saving...' : 'Save standings'}
+			{saving ? m.standings_saving() : m.standings_save()}
 		</button>
 		{#if message}
 			<span class="text-sm text-emerald-400">{message}</span>

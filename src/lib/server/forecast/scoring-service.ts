@@ -2,6 +2,8 @@ import { and, desc, eq, sql } from 'drizzle-orm';
 import type { Database } from '$lib/server/db';
 import { user } from '$lib/server/db/auth.schema';
 import {
+	actualGroupStandings,
+	actualTournamentExtras,
 	groupStandingPredictions,
 	matchPredictions,
 	matches,
@@ -86,17 +88,36 @@ export async function scoreUserPredictions(db: Database, userId: string, tournam
 			)
 		);
 
-	// Standing results would come from admin entry — placeholder empty for now
-	const standingBreakdown = scoreGroupStandings(
-		standingRows.map((r) => ({
-			groupId: r.groupId,
-			teamId: r.teamId,
-			predictedPosition: r.predictedPosition
-		})),
-		[],
-		rules
-	);
-	const standingPoints = standingBreakdown.total;
+	const actualStandings = await db
+		.select()
+		.from(actualGroupStandings)
+		.where(eq(actualGroupStandings.tournamentId, tournamentId));
+
+	const actualStandingRows = actualStandings.map((r) => ({
+		groupId: r.groupId,
+		teamId: r.teamId,
+		actualPosition: r.actualPosition
+	}));
+
+	let standingPoints = 0;
+	for (const row of standingRows) {
+		const breakdown = scoreGroupStandings(
+			[
+				{
+					groupId: row.groupId,
+					teamId: row.teamId,
+					predictedPosition: row.predictedPosition
+				}
+			],
+			actualStandingRows,
+			rules
+		);
+		standingPoints += breakdown.total;
+		await db
+			.update(groupStandingPredictions)
+			.set({ pointsEarned: breakdown.total })
+			.where(eq(groupStandingPredictions.id, row.id));
+	}
 
 	const [extras] = await db
 		.select()
@@ -109,9 +130,14 @@ export async function scoreUserPredictions(db: Database, userId: string, tournam
 		)
 		.limit(1);
 
+	const [actualExtras] = await db
+		.select()
+		.from(actualTournamentExtras)
+		.where(eq(actualTournamentExtras.tournamentId, tournamentId))
+		.limit(1);
+
 	let extrasPoints = 0;
-	if (extras) {
-		// Actual results from admin — placeholder empty
+	if (extras && actualExtras) {
 		const extrasBreakdown = scoreTournamentExtras(
 			{
 				championTeamId: extras.championTeamId,
@@ -120,14 +146,19 @@ export async function scoreUserPredictions(db: Database, userId: string, tournam
 				darkHorseTeamId: extras.darkHorseTeamId
 			},
 			{
-				championTeamId: null,
-				runnerUpTeamId: null,
-				topScorerName: null,
-				darkHorseTeamId: null
+				championTeamId: actualExtras.championTeamId,
+				runnerUpTeamId: actualExtras.runnerUpTeamId,
+				topScorerName: actualExtras.topScorerName,
+				darkHorseTeamId: actualExtras.darkHorseTeamId
 			},
 			rules
 		);
 		extrasPoints = extrasBreakdown.total;
+
+		await db
+			.update(tournamentExtrasPredictions)
+			.set({ pointsEarned: extrasBreakdown.total })
+			.where(eq(tournamentExtrasPredictions.id, extras.id));
 	}
 
 	const totalPoints = matchPoints + standingPoints + extrasPoints;
@@ -168,6 +199,36 @@ export async function scoreUserPredictions(db: Database, userId: string, tournam
 			updatedAt: now
 		});
 	}
+}
+
+export async function scoreAllUsers(db: Database, tournamentId: string) {
+	const usersWithPredictions = await db
+		.selectDistinct({ userId: matchPredictions.userId })
+		.from(matchPredictions)
+		.innerJoin(matches, eq(matchPredictions.matchId, matches.id))
+		.where(eq(matches.tournamentId, tournamentId));
+
+	const usersWithStandings = await db
+		.selectDistinct({ userId: groupStandingPredictions.userId })
+		.from(groupStandingPredictions)
+		.where(eq(groupStandingPredictions.tournamentId, tournamentId));
+
+	const usersWithExtras = await db
+		.selectDistinct({ userId: tournamentExtrasPredictions.userId })
+		.from(tournamentExtrasPredictions)
+		.where(eq(tournamentExtrasPredictions.tournamentId, tournamentId));
+
+	const userIds = new Set([
+		...usersWithPredictions.map((u) => u.userId),
+		...usersWithStandings.map((u) => u.userId),
+		...usersWithExtras.map((u) => u.userId)
+	]);
+
+	for (const userId of userIds) {
+		await scoreUserPredictions(db, userId, tournamentId);
+	}
+
+	return userIds.size;
 }
 
 export async function getLeaderboard(db: Database, tournamentId: string, limit = 50) {

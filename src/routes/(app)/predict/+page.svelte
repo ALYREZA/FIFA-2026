@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { invalidateAll } from '$app/navigation';
 	import MatchPredictionForm from '$lib/components/MatchPredictionForm.svelte';
+	import * as m from '$lib/paraglide/messages';
 
 	let { data } = $props();
 
@@ -16,25 +17,25 @@
 </script>
 
 {#if !data.tournament}
-	<p class="text-slate-400">No tournament configured.</p>
+	<p class="text-slate-400">{m.dashboard_no_tournament()}</p>
 {:else}
 	<div class="space-y-8">
 		<div>
-			<h1 class="text-2xl font-bold text-white">Match predictions</h1>
+			<h1 class="text-2xl font-bold text-white">{m.predict_title()}</h1>
 			<p class="mt-1 text-sm text-slate-400">
-				Predictions lock {data.tournament.lockMinutesBeforeKickoff} minutes before kickoff.
+				{m.predict_lock_hint({ minutes: String(data.tournament.lockMinutesBeforeKickoff) })}
 			</p>
 		</div>
 
 		{#each data.stages as stage (stage.id)}
-			{@const stageMatches = data.matches.filter((m) => m.stageId === stage.id)}
+			{@const stageMatches = data.matches.filter((match) => match.stageId === stage.id)}
 			{#if stageMatches.length > 0}
 				<section>
 					<h2 class="mb-4 text-lg font-semibold text-emerald-400">{stage.name}</h2>
 
 					{#if !stageMatches[0].stageUnlocked}
 						<p class="rounded-lg border border-amber-900/40 bg-amber-950/30 px-4 py-3 text-sm text-amber-300">
-							This stage unlocks after the previous round is complete.
+							{m.predict_stage_locked()}
 						</p>
 					{:else}
 						<div class="grid gap-4 md:grid-cols-2">

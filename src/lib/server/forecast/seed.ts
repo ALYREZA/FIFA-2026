@@ -1,47 +1,86 @@
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import type { Database } from '$lib/server/db';
-import { matches, stages, teams, tournaments } from '$lib/server/db/forecast.schema';
+import {
+	groupStandingPredictions,
+	matchPredictions,
+	matches,
+	stages,
+	teams,
+	tournamentExtrasPredictions,
+	tournaments,
+	userScores
+} from '$lib/server/db/forecast.schema';
+import { FIFA_2026_GROUPS, FIFA_2026_TEAMS, GROUP_ROUND_ROBIN } from './data/teams';
+import { buildKnockoutBracket } from './data/knockout-bracket';
 import { DEFAULT_SCORING_RULES } from './rules';
 
-const TOURNAMENT_ID = 'fifa-2026';
+export const TOURNAMENT_ID = 'fifa-2026';
+export const SEED_VERSION = 2;
 
-const GROUP_A_TEAMS = [
-	{ id: 'mex', name: 'Mexico', code: 'MEX', flag: '🇲🇽' },
-	{ id: 'rsa', name: 'South Africa', code: 'RSA', flag: '🇿🇦' },
-	{ id: 'kor', name: 'South Korea', code: 'KOR', flag: '🇰🇷' },
-	{ id: 'den', name: 'Denmark', code: 'DEN', flag: '🇩🇰' }
+const TOURNAMENT_START = new Date('2026-06-11T17:00:00Z');
+const EXTRAS_LOCK = new Date('2026-06-11T17:00:00Z');
+
+const STAGE_DEFS = [
+	{ id: 'stage-group', type: 'group' as const, name: 'Group Stage', order: 1, unlockAfterOrder: null },
+	{ id: 'stage-r32', type: 'r32' as const, name: 'Round of 32', order: 2, unlockAfterOrder: 1 },
+	{ id: 'stage-r16', type: 'r16' as const, name: 'Round of 16', order: 3, unlockAfterOrder: 2 },
+	{ id: 'stage-qf', type: 'qf' as const, name: 'Quarter-finals', order: 4, unlockAfterOrder: 3 },
+	{ id: 'stage-sf', type: 'sf' as const, name: 'Semi-finals', order: 5, unlockAfterOrder: 4 },
+	{ id: 'stage-third', type: 'third_place' as const, name: 'Third-place play-off', order: 6, unlockAfterOrder: 5 },
+	{ id: 'stage-final', type: 'final' as const, name: 'Final', order: 7, unlockAfterOrder: 5 }
 ];
 
-const GROUP_B_TEAMS = [
-	{ id: 'can', name: 'Canada', code: 'CAN', flag: '🇨🇦' },
-	{ id: 'qat', name: 'Qatar', code: 'QAT', flag: '🇶🇦' },
-	{ id: 'sui', name: 'Switzerland', code: 'SUI', flag: '🇨🇭' },
-	{ id: 'bra', name: 'Brazil', code: 'BRA', flag: '🇧🇷' }
-];
+function addDays(base: Date, days: number, hour = 18): Date {
+	const d = new Date(base);
+	d.setUTCDate(d.getUTCDate() + days);
+	d.setUTCHours(hour, 0, 0, 0);
+	return d;
+}
 
 export async function seedTournamentIfNeeded(db: Database) {
 	const [existing] = await db.select().from(tournaments).limit(1);
-	if (existing) return existing;
+	if (existing) {
+		const [{ count }] = await db
+			.select({ count: sql<number>`count(*)` })
+			.from(teams)
+			.where(eq(teams.tournamentId, TOURNAMENT_ID));
+		if (Number(count) >= 48) return existing;
+		return seedFullTournament(db, true);
+	}
 
-	const tournamentStart = new Date('2026-06-11T00:00:00Z');
-	const extrasLock = new Date('2026-06-11T00:00:00Z');
+	return seedFullTournament(db, false);
+}
+
+export async function reseedTournament(db: Database) {
+	return seedFullTournament(db, true);
+}
+
+async function seedFullTournament(db: Database, force: boolean) {
+	if (force) {
+		await db.delete(matchPredictions);
+		await db.delete(groupStandingPredictions);
+		await db.delete(tournamentExtrasPredictions);
+		await db.delete(userScores);
+		await db.delete(matches);
+		await db.delete(stages);
+		await db.delete(teams);
+		await db.delete(tournaments).where(eq(tournaments.id, TOURNAMENT_ID));
+	}
+
+	const [existing] = await db.select().from(tournaments).limit(1);
+	if (existing && !force) return existing;
 
 	await db.insert(tournaments).values({
 		id: TOURNAMENT_ID,
 		name: 'FIFA World Cup 2026',
 		slug: 'fifa-2026',
-		startsAt: tournamentStart,
+		startsAt: TOURNAMENT_START,
 		lockMinutesBeforeKickoff: 15,
-		extrasLockedAt: extrasLock,
-		scoringRules: DEFAULT_SCORING_RULES
+		extrasLockedAt: EXTRAS_LOCK,
+		scoringRules: { ...DEFAULT_SCORING_RULES, seedVersion: SEED_VERSION }
 	});
 
-	const allTeams = [
-		...GROUP_A_TEAMS.map((t) => ({ ...t, groupId: 'A' })),
-		...GROUP_B_TEAMS.map((t) => ({ ...t, groupId: 'B' }))
-	];
-
-	for (const team of allTeams) {
+	for (const team of FIFA_2026_TEAMS) {
 		await db.insert(teams).values({
 			id: team.id,
 			tournamentId: TOURNAMENT_ID,
@@ -52,16 +91,7 @@ export async function seedTournamentIfNeeded(db: Database) {
 		});
 	}
 
-	const stageDefs = [
-		{ id: 'stage-group', type: 'group' as const, name: 'Group Stage', order: 1, unlockAfterOrder: null },
-		{ id: 'stage-r32', type: 'r32' as const, name: 'Round of 32', order: 2, unlockAfterOrder: 1 },
-		{ id: 'stage-r16', type: 'r16' as const, name: 'Round of 16', order: 3, unlockAfterOrder: 2 },
-		{ id: 'stage-qf', type: 'qf' as const, name: 'Quarter-finals', order: 4, unlockAfterOrder: 3 },
-		{ id: 'stage-sf', type: 'sf' as const, name: 'Semi-finals', order: 5, unlockAfterOrder: 4 },
-		{ id: 'stage-final', type: 'final' as const, name: 'Final', order: 6, unlockAfterOrder: 5 }
-	];
-
-	for (const stage of stageDefs) {
+	for (const stage of STAGE_DEFS) {
 		await db.insert(stages).values({
 			id: stage.id,
 			tournamentId: TOURNAMENT_ID,
@@ -73,78 +103,125 @@ export async function seedTournamentIfNeeded(db: Database) {
 		});
 	}
 
-	const groupMatches = [
-		{ id: 'm-a1', groupId: 'A', home: 'mex', away: 'rsa', day: 0 },
-		{ id: 'm-a2', groupId: 'A', home: 'kor', away: 'den', day: 1 },
-		{ id: 'm-a3', groupId: 'A', home: 'mex', away: 'kor', day: 5 },
-		{ id: 'm-a4', groupId: 'A', home: 'rsa', away: 'den', day: 6 },
-		{ id: 'm-b1', groupId: 'B', home: 'can', away: 'qat', day: 0 },
-		{ id: 'm-b2', groupId: 'B', home: 'sui', away: 'bra', day: 1 },
-		{ id: 'm-b3', groupId: 'B', home: 'can', away: 'sui', day: 5 },
-		{ id: 'm-b4', groupId: 'B', home: 'qat', away: 'bra', day: 6 }
-	];
+	let groupMatchIndex = 0;
+	const groupLetters = Object.keys(FIFA_2026_GROUPS).sort();
 
-	for (const gm of groupMatches) {
-		const kickoff = new Date(tournamentStart);
-		kickoff.setDate(kickoff.getDate() + gm.day);
-		kickoff.setHours(18, 0, 0, 0);
+	for (const groupId of groupLetters) {
+		const groupTeams = FIFA_2026_GROUPS[groupId];
+		const groupOffset = groupLetters.indexOf(groupId);
 
+		for (let md = 0; md < GROUP_ROUND_ROBIN.length; md++) {
+			const [hi, ai, hj, aj] = GROUP_ROUND_ROBIN[md];
+			const day = Math.floor(groupMatchIndex / 6) + md * 5 + Math.floor(groupOffset / 3);
+			const kickoff = addDays(TOURNAMENT_START, day, 14 + (groupMatchIndex % 3) * 4);
+
+			await db.insert(matches).values({
+				id: `m-${groupId.toLowerCase()}${md * 2 + 1}`,
+				tournamentId: TOURNAMENT_ID,
+				stageId: 'stage-group',
+				homeTeamId: groupTeams[hi].id,
+				awayTeamId: groupTeams[ai].id,
+				groupId,
+				kickoffAt: kickoff,
+				status: 'scheduled'
+			});
+
+			const kickoff2 = addDays(kickoff, 0, kickoff.getUTCHours() + 2);
+			await db.insert(matches).values({
+				id: `m-${groupId.toLowerCase()}${md * 2 + 2}`,
+				tournamentId: TOURNAMENT_ID,
+				stageId: 'stage-group',
+				homeTeamId: groupTeams[hj].id,
+				awayTeamId: groupTeams[aj].id,
+				groupId,
+				kickoffAt: kickoff2,
+				status: 'scheduled'
+			});
+
+			groupMatchIndex += 2;
+		}
+	}
+
+	const bracket = buildKnockoutBracket();
+	let knockoutDay = 17;
+
+	async function insertKnockout(
+		id: string,
+		stageId: string,
+		opts: {
+			homeSourceMatchId?: string;
+			awaySourceMatchId?: string;
+			winnerAdvancesToMatchId?: string;
+			winnerAdvancesAs?: 'home' | 'away';
+			dayOffset: number;
+		}
+	) {
 		await db.insert(matches).values({
-			id: gm.id,
+			id,
 			tournamentId: TOURNAMENT_ID,
-			stageId: 'stage-group',
-			homeTeamId: gm.home,
-			awayTeamId: gm.away,
-			groupId: gm.groupId,
-			kickoffAt: kickoff,
-			status: 'scheduled'
+			stageId,
+			homeTeamId: null,
+			awayTeamId: null,
+			kickoffAt: addDays(TOURNAMENT_START, opts.dayOffset),
+			status: 'scheduled',
+			homeSourceMatchId: opts.homeSourceMatchId ?? null,
+			awaySourceMatchId: opts.awaySourceMatchId ?? null,
+			winnerAdvancesToMatchId: opts.winnerAdvancesToMatchId ?? null,
+			winnerAdvancesAs: opts.winnerAdvancesAs ?? null
 		});
 	}
 
-	const r32Kickoff = new Date(tournamentStart);
-	r32Kickoff.setDate(r32Kickoff.getDate() + 14);
+	for (const [i, link] of bracket.r32.entries()) {
+		await insertKnockout(link.id, 'stage-r32', {
+			winnerAdvancesToMatchId: link.winnerAdvancesToId,
+			winnerAdvancesAs: link.winnerAdvancesAs,
+			dayOffset: knockoutDay + Math.floor(i / 4)
+		});
+	}
 
-	await db.insert(matches).values({
-		id: 'm-r32-1',
-		tournamentId: TOURNAMENT_ID,
-		stageId: 'stage-r32',
-		homeTeamId: null,
-		awayTeamId: null,
-		kickoffAt: r32Kickoff,
-		status: 'scheduled',
-		homeSourceMatchId: 'm-a1',
-		awaySourceMatchId: 'm-b1',
-		winnerAdvancesToMatchId: 'm-r16-1',
-		winnerAdvancesAs: 'home'
+	knockoutDay += 4;
+	for (const [i, link] of bracket.r16.entries()) {
+		await insertKnockout(link.id, 'stage-r16', {
+			homeSourceMatchId: link.homeSourceId,
+			awaySourceMatchId: link.awaySourceId,
+			winnerAdvancesToMatchId: link.winnerAdvancesToId,
+			winnerAdvancesAs: link.winnerAdvancesAs,
+			dayOffset: knockoutDay + Math.floor(i / 2)
+		});
+	}
+
+	knockoutDay += 3;
+	for (const [i, link] of bracket.qf.entries()) {
+		await insertKnockout(link.id, 'stage-qf', {
+			homeSourceMatchId: link.homeSourceId,
+			awaySourceMatchId: link.awaySourceId,
+			winnerAdvancesToMatchId: link.winnerAdvancesToId,
+			winnerAdvancesAs: link.winnerAdvancesAs,
+			dayOffset: knockoutDay + i
+		});
+	}
+
+	knockoutDay += 3;
+	for (const link of bracket.sf) {
+		await insertKnockout(link.id, 'stage-sf', {
+			homeSourceMatchId: link.homeSourceId,
+			awaySourceMatchId: link.awaySourceId,
+			winnerAdvancesToMatchId: link.winnerAdvancesToId,
+			winnerAdvancesAs: link.winnerAdvancesAs,
+			dayOffset: knockoutDay
+		});
+		knockoutDay++;
+	}
+
+	// Third-place: teams set by admin after semi-finals (losers, not bracket winners)
+	await insertKnockout(bracket.thirdPlace.id, 'stage-third', {
+		dayOffset: knockoutDay + 1
 	});
 
-	const r16Kickoff = new Date(r32Kickoff);
-	r16Kickoff.setDate(r16Kickoff.getDate() + 4);
-
-	await db.insert(matches).values({
-		id: 'm-r16-1',
-		tournamentId: TOURNAMENT_ID,
-		stageId: 'stage-r16',
-		homeTeamId: null,
-		awayTeamId: 'bra',
-		kickoffAt: r16Kickoff,
-		status: 'scheduled',
-		awaySourceMatchId: null,
-		winnerAdvancesToMatchId: 'm-final-1',
-		winnerAdvancesAs: 'home'
-	});
-
-	const finalKickoff = new Date(r16Kickoff);
-	finalKickoff.setDate(finalKickoff.getDate() + 10);
-
-	await db.insert(matches).values({
-		id: 'm-final-1',
-		tournamentId: TOURNAMENT_ID,
-		stageId: 'stage-final',
-		homeTeamId: null,
-		awayTeamId: null,
-		kickoffAt: finalKickoff,
-		status: 'scheduled'
+	await insertKnockout(bracket.final.id, 'stage-final', {
+		homeSourceMatchId: bracket.final.homeSourceId,
+		awaySourceMatchId: bracket.final.awaySourceId,
+		dayOffset: knockoutDay + 5
 	});
 
 	const [tournament] = await db
