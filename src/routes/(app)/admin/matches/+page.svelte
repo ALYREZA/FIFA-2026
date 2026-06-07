@@ -6,7 +6,12 @@
 
 	let { data, form } = $props();
 
-	async function handleSaveResult(matchId: string, homeScore: number, awayScore: number, status: string) {
+	async function handleSaveResult(
+		matchId: string,
+		homeScore: number,
+		awayScore: number,
+		status: string
+	) {
 		const fd = new FormData();
 		fd.set('matchId', matchId);
 		fd.set('homeScore', String(homeScore));
@@ -120,9 +125,15 @@
 					<button
 						type="button"
 						onclick={() => {
-							const home = Number((document.getElementById(`home-${match.id}`) as HTMLInputElement).value);
-							const away = Number((document.getElementById(`away-${match.id}`) as HTMLInputElement).value);
-							const status = (document.getElementById(`status-${match.id}`) as HTMLSelectElement).value;
+							const home = Number(
+								(document.getElementById(`home-${match.id}`) as HTMLInputElement).value
+							);
+							const away = Number(
+								(document.getElementById(`away-${match.id}`) as HTMLInputElement).value
+							);
+							const status = (
+								document.getElementById(`status-${match.id}`) as unknown as HTMLSelectElement
+							).value;
 							handleSaveResult(match.id, home, away, status);
 						}}
 						class="btn-primary px-3 py-1.5 text-sm"

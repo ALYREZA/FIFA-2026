@@ -8,8 +8,9 @@
 		"build": "NODE_OPTIONS= vite build",
 		"prebuild": "node scripts/wrangler-types.mjs",
 		"preview": "node scripts/wrangler.mjs dev --port 4173",
-		"prepare": "svelte-kit sync || echo ''",
-		"check": "node scripts/wrangler-types.mjs && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"prepare": "svelte-kit sync || echo '' && pnpm paraglide:compile",
+		"paraglide:compile": "paraglide-js compile --project ./project.inlang --outdir ./src/lib/paraglide && node scripts/paraglide-postcompile.mjs",
+		"check": "node scripts/wrangler-types.mjs && pnpm paraglide:compile && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write .",
@@ -57,6 +58,7 @@
 		"typescript": "^6.0.2",
 		"typescript-eslint": "^8.58.1",
 		"vite": "^8.0.7",
-		"wrangler": "^4.81.0"
+		"wrangler": "^4.81.0",
+		"zod": "^4.3.5"
 	}
 }

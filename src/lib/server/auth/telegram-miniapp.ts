@@ -1,6 +1,5 @@
 import type { BetterAuthPlugin } from 'better-auth';
-import { createAuthEndpoint } from '@better-auth/core/api';
-import { APIError } from 'better-auth/api';
+import { APIError, createAuthEndpoint } from 'better-auth/api';
 import { setSessionCookie } from 'better-auth/cookies';
 import { parseUserOutput } from 'better-auth/db';
 import { env } from '$env/dynamic/private';

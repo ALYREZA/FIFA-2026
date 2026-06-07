@@ -10,7 +10,9 @@
 		en: m.locale_en
 	};
 
-	function handleLocaleChange(locale: string) {
+	type AppLocale = (typeof locales)[number];
+
+	function handleLocaleChange(locale: AppLocale) {
 		const href = localizeHref(page.url.pathname, { locale });
 		window.location.href = resolve(href as Pathname);
 	}

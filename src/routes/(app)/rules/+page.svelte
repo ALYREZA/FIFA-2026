@@ -4,7 +4,7 @@
 
 	let { data } = $props();
 
-	const lockMinutes = data.tournament?.lockMinutesBeforeKickoff ?? 15;
+	const lockMinutes = $derived(data.tournament?.lockMinutesBeforeKickoff ?? 15);
 </script>
 
 <div class="space-y-8">
@@ -29,9 +29,13 @@
 			<div>
 				<p class="font-medium text-foreground">{m.dashboard_group_matches()}</p>
 				<p>{m.rules_points_exact({ points: String(DEFAULT_SCORING_RULES.group.exactScore) })}</p>
-				<p>{m.rules_points_result({ points: String(DEFAULT_SCORING_RULES.group.correctResult) })}</p>
 				<p>
-					{m.rules_points_goal_diff({ points: String(DEFAULT_SCORING_RULES.group.correctGoalDiff) })}
+					{m.rules_points_result({ points: String(DEFAULT_SCORING_RULES.group.correctResult) })}
+				</p>
+				<p>
+					{m.rules_points_goal_diff({
+						points: String(DEFAULT_SCORING_RULES.group.correctGoalDiff)
+					})}
 				</p>
 			</div>
 			<div>
@@ -60,8 +64,12 @@
 				<p class="font-medium text-foreground">{m.dashboard_tournament_extras()}</p>
 				<p>{m.rules_points_champion({ points: String(DEFAULT_SCORING_RULES.extras.champion) })}</p>
 				<p>{m.rules_points_runner_up({ points: String(DEFAULT_SCORING_RULES.extras.runnerUp) })}</p>
-				<p>{m.rules_points_top_scorer({ points: String(DEFAULT_SCORING_RULES.extras.topScorer) })}</p>
-				<p>{m.rules_points_dark_horse({ points: String(DEFAULT_SCORING_RULES.extras.darkHorse) })}</p>
+				<p>
+					{m.rules_points_top_scorer({ points: String(DEFAULT_SCORING_RULES.extras.topScorer) })}
+				</p>
+				<p>
+					{m.rules_points_dark_horse({ points: String(DEFAULT_SCORING_RULES.extras.darkHorse) })}
+				</p>
 			</div>
 			<div>
 				<p class="font-medium text-foreground">{m.nav_podium()}</p>

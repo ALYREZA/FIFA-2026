@@ -11,9 +11,7 @@
 	let saving = $state(false);
 	let message = $state('');
 
-	const isLocked = $derived(
-		data.pricing ? new Date() >= data.pricing.locksAt : false
-	);
+	const isLocked = $derived(data.pricing ? new Date() >= data.pricing.locksAt : false);
 	const isSubmitted = $derived(!!data.podium);
 	const canSubmit = $derived(!isLocked && !isSubmitted && !saving);
 
@@ -38,8 +36,8 @@
 			message = m.podium_saved();
 			await invalidateAll();
 		} else {
-			const body = await res.json();
-			message = body?.data?.error ?? m.podium_failed();
+			const body = (await res.json()) as { data?: { error?: string } };
+			message = body.data?.error ?? m.podium_failed();
 		}
 	}
 </script>
@@ -54,7 +52,10 @@
 		<div class="card flex flex-wrap items-center justify-between gap-3 p-4">
 			<div>
 				<p class="text-sm text-muted">{m.podium_current_cost()}</p>
-				<p class="text-2xl font-bold text-accent-text">{data.pricing.currentCost} {m.podium_coins()}</p>
+				<p class="text-2xl font-bold text-accent-text">
+					{data.pricing.currentCost}
+					{m.podium_coins()}
+				</p>
 			</div>
 			<div class="text-end">
 				<p class="text-sm text-muted">{m.podium_your_balance()}</p>
