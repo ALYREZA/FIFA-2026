@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import { invalidateAll } from '$app/navigation';
+	import CountryFlag from '$lib/components/CountryFlag.svelte';
 	import * as m from '$lib/paraglide/messages';
 
 	let { data, form } = $props();
@@ -88,8 +89,8 @@
 					<span>{match.kickoffAt.toLocaleString()}</span>
 				</div>
 				<div class="flex flex-wrap items-center gap-3">
-					<span class="min-w-24 text-sm">
-						{match.homeTeam?.flagEmoji ?? '—'}
+					<span class="flex min-w-24 items-center gap-1.5 text-sm">
+						<CountryFlag teamId={match.homeTeam?.id} />
 						{match.homeTeam?.code ?? 'TBD'}
 					</span>
 					<input
@@ -107,9 +108,9 @@
 						id="away-{match.id}"
 						class="input w-14 px-2 py-1 text-center"
 					/>
-					<span class="min-w-24 text-sm">
+					<span class="flex min-w-24 items-center gap-1.5 text-sm">
 						{match.awayTeam?.code ?? 'TBD'}
-						{match.awayTeam?.flagEmoji ?? '—'}
+						<CountryFlag teamId={match.awayTeam?.id} />
 					</span>
 					<select id="status-{match.id}" class="input px-2 py-1 text-sm">
 						<option value="scheduled" selected={match.status === 'scheduled'}>scheduled</option>

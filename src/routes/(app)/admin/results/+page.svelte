@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import { invalidateAll } from '$app/navigation';
+	import CountryFlag from '$lib/components/CountryFlag.svelte';
 	import * as m from '$lib/paraglide/messages';
 
 	let { data } = $props();
@@ -76,7 +77,10 @@
 				<div class="space-y-2">
 					{#each group.teams as team (team.id)}
 						<div class="list-row flex items-center justify-between px-3 py-2">
-							<span>{team.flagEmoji} {team.name}</span>
+							<span class="flex items-center gap-2">
+								<CountryFlag teamId={team.id} />
+								{team.name}
+							</span>
 							<select
 								value={positions[group.id]?.[team.id] ?? ''}
 								onchange={(e) => {
@@ -108,7 +112,7 @@
 				<select id="admin-champion" bind:value={championTeamId} class="input w-full py-2">
 					<option value="">{m.extras_select_team()}</option>
 					{#each data.groups?.flatMap((g) => g.teams) ?? [] as team (team.id)}
-						<option value={team.id}>{team.flagEmoji} {team.name}</option>
+						<option value={team.id}>{team.code} · {team.name}</option>
 					{/each}
 				</select>
 			</div>
@@ -117,7 +121,7 @@
 				<select id="admin-runner-up" bind:value={runnerUpTeamId} class="input w-full py-2">
 					<option value="">{m.extras_select_team()}</option>
 					{#each data.groups?.flatMap((g) => g.teams) ?? [] as team (team.id)}
-						<option value={team.id}>{team.flagEmoji} {team.name}</option>
+						<option value={team.id}>{team.code} · {team.name}</option>
 					{/each}
 				</select>
 			</div>
@@ -136,7 +140,7 @@
 				<select id="admin-dark-horse" bind:value={darkHorseTeamId} class="input w-full py-2">
 					<option value="">{m.extras_select_team()}</option>
 					{#each data.groups?.flatMap((g) => g.teams) ?? [] as team (team.id)}
-						<option value={team.id}>{team.flagEmoji} {team.name}</option>
+						<option value={team.id}>{team.code} · {team.name}</option>
 					{/each}
 				</select>
 			</div>

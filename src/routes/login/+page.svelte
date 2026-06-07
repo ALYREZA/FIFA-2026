@@ -1,17 +1,47 @@
 <script lang="ts">
-	import type { Pathname } from '$app/types';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import { authClient } from '$lib/auth-client';
 	import { normalizeIranPhone } from '$lib/phone';
+	import { USERNAME_RULES } from '$lib/forecast/game-rules';
 	import LocaleSwitcher from '$lib/components/LocaleSwitcher.svelte';
 	import * as m from '$lib/paraglide/messages';
 
+	let { data, form } = $props();
+
 	let phoneInput = $state('');
 	let otpCode = $state('');
-	let step = $state<'phone' | 'otp'>('phone');
+	let usernameInput = $state('');
+	let step = $state<'phone' | 'otp' | 'username'>('phone');
 	let loading = $state(false);
 	let error = $state('');
+
+	$effect.pre(() => {
+		if (data.needsUsername) {
+			step = 'username';
+		}
+	});
+
+	function usernameErrorMessage(code: string | undefined) {
+		switch (code) {
+			case 'too_short':
+				return m.login_username_too_short();
+			case 'too_long':
+				return m.login_username_too_long();
+			case 'invalid_format':
+				return m.login_username_invalid();
+			case 'reserved':
+				return m.login_username_reserved();
+			case 'taken':
+				return m.login_username_taken();
+			case 'already_set':
+				return m.login_username_already_set();
+			case 'not_authenticated':
+				return m.login_username_not_authenticated();
+			default:
+				return m.login_username_invalid();
+		}
+	}
 
 	async function handleSendOtp() {
 		error = '';
@@ -59,8 +89,11 @@
 			return;
 		}
 
-		const redirect = (page.url.searchParams.get('redirect') ?? '/dashboard') as Pathname;
-		window.location.href = resolve(redirect);
+		const redirect = page.url.searchParams.get('redirect') ?? '';
+		const loginUrl = redirect
+			? `${resolve('/login')}?redirect=${encodeURIComponent(redirect)}`
+			: resolve('/login');
+		window.location.href = loginUrl;
 	}
 
 	function handleBack() {
@@ -78,14 +111,49 @@
 	<div class="card w-full max-w-md border-header-border p-6 sm:p-8">
 		<div class="mb-8 text-center">
 			<h1 class="text-2xl font-bold text-accent-text">{m.login_title()}</h1>
-			<p class="mt-2 text-sm text-muted">{m.login_subtitle()}</p>
+			<p class="mt-2 text-sm text-muted">
+				{#if step === 'username'}
+					{m.login_username_subtitle()}
+				{:else}
+					{m.login_subtitle()}
+				{/if}
+			</p>
 		</div>
 
-		{#if error}
-			<div class="alert-error mb-4 px-4 py-3">{error}</div>
+		{#if error || form?.usernameError}
+			<div class="alert-error mb-4 px-4 py-3">
+				{error || usernameErrorMessage(form?.usernameError)}
+			</div>
 		{/if}
 
-		{#if step === 'phone'}
+		{#if step === 'username'}
+			<form method="POST" action="?/setUsername" class="space-y-4">
+				<div>
+					<label for="username" class="label">{m.login_username_label()}</label>
+					<input
+						id="username"
+						name="username"
+						type="text"
+						bind:value={usernameInput}
+						placeholder={m.login_username_placeholder()}
+						dir="ltr"
+						autocapitalize="off"
+						autocomplete="username"
+						maxlength={USERNAME_RULES.maxLength}
+						class="input w-full px-4 py-3 placeholder:text-subtle"
+					/>
+					<p class="mt-1 text-xs text-subtle">{m.login_username_hint()}</p>
+				</div>
+
+				<button
+					type="submit"
+					disabled={loading || usernameInput.trim().length < USERNAME_RULES.minLength}
+					class="btn-primary w-full py-3"
+				>
+					{loading ? m.login_username_saving() : m.login_username_continue()}
+				</button>
+			</form>
+		{:else if step === 'phone'}
 			<form
 				onsubmit={(e) => {
 					e.preventDefault();

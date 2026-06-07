@@ -69,7 +69,7 @@
 			>
 				<option value="">{m.extras_select_team()}</option>
 				{#each data.teams ?? [] as team (team.id)}
-					<option value={team.id}>{team.flagEmoji} {team.name}</option>
+					<option value={team.id}>{team.code} · {team.name}</option>
 				{/each}
 			</select>
 		</div>
@@ -84,7 +84,7 @@
 			>
 				<option value="">{m.extras_select_team()}</option>
 				{#each data.teams ?? [] as team (team.id)}
-					<option value={team.id}>{team.flagEmoji} {team.name}</option>
+					<option value={team.id}>{team.code} · {team.name}</option>
 				{/each}
 			</select>
 		</div>
@@ -111,7 +111,7 @@
 			>
 				<option value="">{m.extras_select_team()}</option>
 				{#each data.teams ?? [] as team (team.id)}
-					<option value={team.id}>{team.flagEmoji} {team.name}</option>
+					<option value={team.id}>{team.code} · {team.name}</option>
 				{/each}
 			</select>
 		</div>

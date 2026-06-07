@@ -7,6 +7,10 @@ export const load: LayoutServerLoad = async ({ locals, url }) => {
 		redirect(303, `/login?redirect=${encodeURIComponent(url.pathname)}`);
 	}
 
+	if (!locals.user?.username) {
+		redirect(303, `/login?redirect=${encodeURIComponent(url.pathname)}`);
+	}
+
 	return {
 		user: locals.user,
 		session: locals.session,

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import CountryFlag from '$lib/components/CountryFlag.svelte';
 	import * as m from '$lib/paraglide/messages';
 
 	type Team = { id: string; name: string; code: string; flagEmoji: string | null } | null;
@@ -56,7 +57,7 @@
 
 	<div class="flex items-center gap-3">
 		<div class="flex flex-1 items-center gap-2">
-			<span class="text-xl">{homeTeam?.flagEmoji ?? '⚽'}</span>
+			<CountryFlag teamId={homeTeam?.id} class="text-xl" />
 			<span class="font-medium">{homeTeam?.code ?? 'TBD'}</span>
 			<input
 				type="number"
@@ -80,7 +81,7 @@
 				class="input w-14 px-2 py-1 text-center"
 			/>
 			<span class="font-medium">{awayTeam?.code ?? 'TBD'}</span>
-			<span class="text-xl">{awayTeam?.flagEmoji ?? '⚽'}</span>
+			<CountryFlag teamId={awayTeam?.id} class="text-xl" />
 		</div>
 	</div>
 

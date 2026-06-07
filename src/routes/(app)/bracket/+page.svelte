@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
+	import CountryFlag from '$lib/components/CountryFlag.svelte';
 	import * as m from '$lib/paraglide/messages';
 
 	let { data } = $props();
@@ -22,7 +23,7 @@
 					</p>
 					<div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
 						<div class="flex items-center gap-2">
-							<span class="text-xl">{match.homeTeam?.flagEmoji ?? '❓'}</span>
+							<CountryFlag teamId={match.homeTeam?.id} class="text-xl" />
 							<span class="font-medium">{match.homeTeam?.code ?? 'TBD'}</span>
 							{#if match.prediction}
 								<span class="ms-2 text-accent-text">
@@ -38,7 +39,7 @@
 								</span>
 							{/if}
 							<span class="font-medium">{match.awayTeam?.code ?? 'TBD'}</span>
-							<span class="text-xl">{match.awayTeam?.flagEmoji ?? '❓'}</span>
+							<CountryFlag teamId={match.awayTeam?.id} class="text-xl" />
 						</div>
 					</div>
 					{#if !match.prediction}

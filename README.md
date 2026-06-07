@@ -91,7 +91,9 @@ On first visit to the dashboard, the tournament is seeded automatically (48 team
 | `pnpm check` | Typecheck (Svelte + TypeScript) |
 | `pnpm lint` | ESLint + Prettier |
 | `pnpm db:local` | Apply local D1 migrations |
+| `pnpm db:remote` | Apply migrations to remote D1 |
 | `pnpm db:push` | Push schema to remote D1 (needs Cloudflare creds) |
+| `pnpm deploy` | Build and deploy to Cloudflare Workers |
 | `pnpm auth:schema` | Regenerate better-auth Drizzle schema |
 | `pnpm gen` | Regenerate Wrangler types |
 
@@ -171,13 +173,19 @@ messages/                       # Paraglide i18n (en.json, fa.json, …)
 - Users need a **Bale account** on that phone number.
 - Rate limits: 30 OTP/hour per phone, 300/min per organization ([docs](https://docs.bale.ai/gateway)).
 
-## Remote deployment
+## Deployment
 
-1. Create a Cloudflare D1 database and update `database_id` in `wrangler.jsonc`.
-2. Run `pnpm db:push` or apply `migrations/*.sql` to remote D1.
-3. Set secrets: `wrangler secret put BALE_CLIENT_ID`, etc.
-4. Set `ORIGIN` to your production URL.
-5. `pnpm build` and deploy via Wrangler / Cloudflare dashboard.
+Production runs on **Cloudflare Workers + D1**. See **[DEPLOYMENT.md](./DEPLOYMENT.md)** for the full guide.
+
+Quick start:
+
+```sh
+pnpm wrangler login
+pnpm wrangler d1 create fifa-2026   # update database_id in wrangler.jsonc
+pnpm db:remote                      # apply migrations to remote D1
+pnpm wrangler secret put ORIGIN     # repeat for all secrets (see DEPLOYMENT.md)
+pnpm deploy
+```
 
 ## License
 

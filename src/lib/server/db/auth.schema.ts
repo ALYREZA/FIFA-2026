@@ -18,6 +18,7 @@ export const user = sqliteTable("user", {
     .notNull(),
   phoneNumber: text("phone_number").unique(),
   phoneNumberVerified: integer("phone_number_verified", { mode: "boolean" }),
+  username: text("username").unique(),
 });
 
 export const session = sqliteTable(

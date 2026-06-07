@@ -235,7 +235,7 @@ export async function getLeaderboard(db: Database, tournamentId: string, limit =
 	return db
 		.select({
 			userId: userScores.userId,
-			name: user.name,
+			username: user.username,
 			totalPoints: userScores.totalPoints,
 			exactScores: userScores.exactScores,
 			correctResults: userScores.correctResults,

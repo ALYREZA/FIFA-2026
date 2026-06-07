@@ -2,7 +2,6 @@
 	import type { Pathname } from '$app/types';
 	import { resolve } from '$app/paths';
 	import { authClient } from '$lib/auth-client';
-	import { formatPhoneDisplay } from '$lib/phone';
 	import LocaleSwitcher from '$lib/components/LocaleSwitcher.svelte';
 	import * as m from '$lib/paraglide/messages';
 
@@ -14,8 +13,13 @@
 		{ href: '/standings', label: m.nav_standings },
 		{ href: '/bracket', label: m.nav_bracket },
 		{ href: '/extras', label: m.nav_extras },
-		{ href: '/leaderboard', label: m.nav_leaderboard }
+		{ href: '/leaderboard', label: m.nav_leaderboard },
+		{ href: '/rules', label: m.nav_rules }
 	];
+
+	function profileHref(username: string) {
+		return resolve('/u/[username]', { username });
+	}
 
 	async function handleSignOut() {
 		await authClient.signOut();
@@ -54,10 +58,13 @@
 
 			<div class="flex items-center gap-2">
 				<LocaleSwitcher />
-				{#if data.user?.phoneNumber}
-					<span class="hidden text-sm text-muted sm:inline" dir="ltr">
-						{formatPhoneDisplay(data.user.phoneNumber)}
-					</span>
+				{#if data.user?.username}
+					<a
+						href={resolve(profileHref(data.user.username))}
+						class="hidden text-sm font-medium text-accent-text hover:underline sm:inline"
+					>
+						@{data.user.username}
+					</a>
 				{/if}
 				<button type="button" onclick={handleSignOut} class="btn-ghost min-h-11">
 					{m.sign_out()}

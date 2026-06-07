@@ -12,6 +12,16 @@ const authConfig = ({
 	baseURL: env.ORIGIN,
 	secret: env.BETTER_AUTH_SECRET,
 	emailAndPassword: { enabled: false },
+	user: {
+		additionalFields: {
+			username: {
+				type: 'string',
+				required: false,
+				unique: true,
+				input: false
+			}
+		}
+	},
 	plugins: [
 		phoneNumber({
 			otpLength: 6,

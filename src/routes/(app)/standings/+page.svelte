@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { invalidateAll } from '$app/navigation';
+	import CountryFlag from '$lib/components/CountryFlag.svelte';
 	import * as m from '$lib/paraglide/messages';
 
 	let { data } = $props();
@@ -69,8 +70,8 @@
 			<div class="space-y-3">
 				{#each group.teams as team (team.id)}
 					<div class="list-row flex items-center justify-between px-4 py-3">
-						<span>
-							{team.flagEmoji}
+						<span class="flex items-center gap-2">
+							<CountryFlag teamId={team.id} />
 							{team.name}
 						</span>
 						<select

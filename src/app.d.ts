@@ -9,6 +9,7 @@ type AppUser = {
 	image?: string | null;
 	phoneNumber?: string | null;
 	phoneNumberVerified?: boolean | null;
+	username?: string | null;
 	createdAt: Date;
 	updatedAt: Date;
 };

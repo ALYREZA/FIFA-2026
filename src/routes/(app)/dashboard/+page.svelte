@@ -1,9 +1,13 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import { DEFAULT_SCORING_RULES } from '$lib/forecast/scoring-rules';
+	import CountryFlag from '$lib/components/CountryFlag.svelte';
 	import * as m from '$lib/paraglide/messages';
 
 	let { data } = $props();
+
+	function profileHref(username: string) {
+		return resolve('/u/[username]', { username });
+	}
 </script>
 
 {#if !data.tournament}
@@ -51,11 +55,11 @@
 					<ul class="space-y-3">
 						{#each data.upcoming as match (match.id)}
 							<li class="list-row flex items-center justify-between px-4 py-3">
-								<span class="text-sm">
-									{match.homeTeam?.flagEmoji}
+								<span class="flex items-center gap-1.5 text-sm">
+									<CountryFlag teamId={match.homeTeam?.id} />
 									{match.homeTeam?.code ?? 'TBD'}
 									<span class="text-subtle">{m.vs()}</span>
-									{match.awayTeam?.flagEmoji}
+									<CountryFlag teamId={match.awayTeam?.id} />
 									{match.awayTeam?.code ?? 'TBD'}
 								</span>
 								<span class="text-xs text-subtle">
@@ -80,7 +84,13 @@
 							<li class="list-row flex items-center justify-between px-4 py-2">
 								<span class="text-sm">
 									<span class="me-2 text-subtle">#{i + 1}</span>
-									{entry.name}
+									{#if entry.username}
+										<a href={profileHref(entry.username)} class="link">
+											@{entry.username}
+										</a>
+									{:else}
+										{m.leaderboard_anonymous()}
+									{/if}
 								</span>
 								<span class="font-medium text-accent-text">{entry.totalPoints}</span>
 							</li>
@@ -91,30 +101,11 @@
 		</section>
 
 		<section class="card border-header-border bg-accent-subtle p-5 sm:p-6">
-			<h2 class="section-title mb-3">{m.dashboard_scoring_rules()}</h2>
-			<div class="grid gap-4 text-sm text-muted sm:grid-cols-2 lg:grid-cols-4">
-				<div>
-					<p class="font-medium text-foreground">{m.dashboard_group_matches()}</p>
-					<p>Exact: {DEFAULT_SCORING_RULES.group.exactScore}</p>
-					<p>Result: {DEFAULT_SCORING_RULES.group.correctResult}</p>
-					<p>Goal diff: +{DEFAULT_SCORING_RULES.group.correctGoalDiff}</p>
-				</div>
-				<div>
-					<p class="font-medium text-foreground">{m.dashboard_knockout()}</p>
-					<p>Winner: {DEFAULT_SCORING_RULES.knockout.correctWinner}</p>
-					<p>Exact: +{DEFAULT_SCORING_RULES.knockout.exactScoreBonus}</p>
-				</div>
-				<div>
-					<p class="font-medium text-foreground">{m.dashboard_group_standings()}</p>
-					<p>Exact: {DEFAULT_SCORING_RULES.standings.positionExact}</p>
-					<p>Off by 1: {DEFAULT_SCORING_RULES.standings.positionOffByOne}</p>
-				</div>
-				<div>
-					<p class="font-medium text-foreground">{m.dashboard_tournament_extras()}</p>
-					<p>Champion: {DEFAULT_SCORING_RULES.extras.champion}</p>
-					<p>Top scorer: {DEFAULT_SCORING_RULES.extras.topScorer}</p>
-				</div>
+			<div class="flex flex-wrap items-center justify-between gap-3">
+				<h2 class="section-title">{m.dashboard_scoring_rules()}</h2>
+				<a href={resolve('/rules')} class="link text-sm">{m.dashboard_view_rules()}</a>
 			</div>
+			<p class="mt-2 text-sm text-muted">{m.dashboard_rules_teaser()}</p>
 		</section>
 	</div>
 {/if}
