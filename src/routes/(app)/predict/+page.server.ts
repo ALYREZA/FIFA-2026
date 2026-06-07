@@ -55,8 +55,7 @@ export const load: PageServerLoad = async ({ locals, platform }) => {
 			locked: isMatchLocked(matchCtx, now),
 			lockAt: getPredictionLockTime(matchCtx),
 			stageUnlocked:
-				stage.unlockAfterOrder === null ||
-				completedOrders.includes(stage.unlockAfterOrder)
+				stage.unlockAfterOrder === null || completedOrders.includes(stage.unlockAfterOrder)
 		};
 	});
 

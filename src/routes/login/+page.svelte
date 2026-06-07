@@ -262,7 +262,11 @@
 					{loading ? m.login_verifying() : m.login_verify()}
 				</button>
 
-				<button type="button" onclick={handleBack} class="w-full text-sm text-muted hover:text-accent-text">
+				<button
+					type="button"
+					onclick={handleBack}
+					class="w-full text-sm text-muted hover:text-accent-text"
+				>
 					{m.login_change_phone()}
 				</button>
 			</form>

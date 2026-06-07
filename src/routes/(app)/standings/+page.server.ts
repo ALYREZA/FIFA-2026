@@ -1,10 +1,7 @@
 import { fail } from '@sveltejs/kit';
 import { getDb } from '$lib/server/db';
 import { seedTournamentIfNeeded } from '$lib/server/forecast/seed';
-import {
-	getUserGroupStandings,
-	submitGroupStandings
-} from '$lib/server/forecast/predictions';
+import { getUserGroupStandings, submitGroupStandings } from '$lib/server/forecast/predictions';
 import { getActiveTournament, getTournamentTeams } from '$lib/server/forecast/tournament';
 import type { Actions, PageServerLoad } from './$types';
 

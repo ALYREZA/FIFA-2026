@@ -25,15 +25,15 @@ This is **not** a betting app — no stakes, odds, real-money wallets, or cash p
 
 ## Tech stack
 
-| Layer | Technology |
-|-------|------------|
-| Framework | SvelteKit 2, Svelte 5 |
-| Deploy | Cloudflare Workers + D1 |
-| CI/CD | GitHub Actions (check, lint, deploy on `main`) |
-| Auth | better-auth (phone OTP) |
-| Database | Drizzle ORM + SQLite (D1) |
-| Styling | Tailwind CSS v4 |
-| i18n | Paraglide (en, fa, tr, ar, es) |
+| Layer     | Technology                                     |
+| --------- | ---------------------------------------------- |
+| Framework | SvelteKit 2, Svelte 5                          |
+| Deploy    | Cloudflare Workers + D1                        |
+| CI/CD     | GitHub Actions (check, lint, deploy on `main`) |
+| Auth      | better-auth (phone OTP)                        |
+| Database  | Drizzle ORM + SQLite (D1)                      |
+| Styling   | Tailwind CSS v4                                |
+| i18n      | Paraglide (en, fa, tr, ar, es)                 |
 
 ## Prerequisites
 
@@ -58,14 +58,14 @@ Copy `.env.example` to `.env` and fill in:
 cp .env.example .env
 ```
 
-| Variable | Description |
-|----------|-------------|
-| `ORIGIN` | App URL, e.g. `http://localhost:4173` for local preview |
-| `BETTER_AUTH_SECRET` | 32+ character random secret |
-| `BALE_CLIENT_ID` | Bale Safir client ID |
-| `BALE_CLIENT_SECRET` | Bale Safir client secret |
-| `ADMIN_PHONE_NUMBERS` | Admin phones (comma-separated, format `989XXXXXXXXX`) |
-| `CLOUDFLARE_*` | Required for remote `db:push` / `db:migrate` only |
+| Variable              | Description                                             |
+| --------------------- | ------------------------------------------------------- |
+| `ORIGIN`              | App URL, e.g. `http://localhost:4173` for local preview |
+| `BETTER_AUTH_SECRET`  | 32+ character random secret                             |
+| `BALE_CLIENT_ID`      | Bale Safir client ID                                    |
+| `BALE_CLIENT_SECRET`  | Bale Safir client secret                                |
+| `ADMIN_PHONE_NUMBERS` | Admin phones (comma-separated, format `989XXXXXXXXX`)   |
+| `CLOUDFLARE_*`        | Required for remote `db:push` / `db:migrate` only       |
 
 ### 3. Initialize local database
 
@@ -92,35 +92,35 @@ On first sign-in, choose a username after OTP verification. On first visit to th
 
 ## Scripts
 
-| Command | Description |
-|---------|-------------|
-| `pnpm build` | Production build |
-| `pnpm preview` | Run locally with D1 binding (port 4173) |
-| `pnpm check` | Typecheck (Svelte + TypeScript) |
-| `pnpm lint` | ESLint + Prettier |
-| `pnpm db:local` | Apply local D1 migrations |
-| `pnpm db:remote` | Apply migrations to remote D1 |
-| `pnpm db:push` | Push schema to remote D1 (needs Cloudflare creds) |
-| `pnpm deploy` | Build and deploy to Cloudflare Workers |
-| `pnpm auth:schema` | Regenerate better-auth Drizzle schema |
-| `pnpm gen` | Regenerate Wrangler types |
+| Command            | Description                                       |
+| ------------------ | ------------------------------------------------- |
+| `pnpm build`       | Production build                                  |
+| `pnpm preview`     | Run locally with D1 binding (port 4173)           |
+| `pnpm check`       | Typecheck (Svelte + TypeScript)                   |
+| `pnpm lint`        | ESLint + Prettier                                 |
+| `pnpm db:local`    | Apply local D1 migrations                         |
+| `pnpm db:remote`   | Apply migrations to remote D1                     |
+| `pnpm db:push`     | Push schema to remote D1 (needs Cloudflare creds) |
+| `pnpm deploy`      | Build and deploy to Cloudflare Workers            |
+| `pnpm auth:schema` | Regenerate better-auth Drizzle schema             |
+| `pnpm gen`         | Regenerate Wrangler types                         |
 
 ## App routes
 
-| Route | Description |
-|-------|-------------|
-| `/login` | Bale OTP sign-in + username setup |
-| `/dashboard` | Overview and upcoming matches |
-| `/predict` | Match predictions |
-| `/standings` | Group table position picks |
-| `/bracket` | Knockout bracket view |
-| `/extras` | Champion, top scorer, etc. |
-| `/podium` | Top 3 teams (permanent pick, coin cost decays before lock) |
-| `/leaderboard` | Rankings (links to public profiles) |
-| `/rules` | Full game rules (points, coins, locking, profiles) |
-| `/u/[username]` | Public read-only prediction profile |
-| `/admin/matches` | Admin: enter results (admin phones only) |
-| `/admin/results` | Admin: official standings & extras |
+| Route            | Description                                                |
+| ---------------- | ---------------------------------------------------------- |
+| `/login`         | Bale OTP sign-in + username setup                          |
+| `/dashboard`     | Overview and upcoming matches                              |
+| `/predict`       | Match predictions                                          |
+| `/standings`     | Group table position picks                                 |
+| `/bracket`       | Knockout bracket view                                      |
+| `/extras`        | Champion, top scorer, etc.                                 |
+| `/podium`        | Top 3 teams (permanent pick, coin cost decays before lock) |
+| `/leaderboard`   | Rankings (links to public profiles)                        |
+| `/rules`         | Full game rules (points, coins, locking, profiles)         |
+| `/u/[username]`  | Public read-only prediction profile                        |
+| `/admin/matches` | Admin: enter results (admin phones only)                   |
+| `/admin/results` | Admin: official standings & extras                         |
 
 Persian UI: switch locale via **فارسی** in the header (URLs use `/fa/...`).
 
@@ -140,32 +140,32 @@ Predictions never become official results — only admin entries do.
 
 ### Point values
 
-| Category | Points |
-|----------|--------|
-| Group — exact score | 5 |
-| Group — correct result | 2 |
-| Group — correct goal difference | +1 |
-| Knockout — correct winner | 3 |
-| Knockout — exact score bonus | +2 |
-| Standings — exact position | 4 |
-| Standings — off by one | 2 |
-| Extras — champion | 10 |
-| Extras — runner-up | 5 |
-| Extras — top scorer | 8 |
-| Extras — dark horse | 6 |
-| Podium — 1st place | 15 |
-| Podium — 2nd place | 10 |
-| Podium — 3rd place | 8 |
+| Category                        | Points |
+| ------------------------------- | ------ |
+| Group — exact score             | 5      |
+| Group — correct result          | 2      |
+| Group — correct goal difference | +1     |
+| Knockout — correct winner       | 3      |
+| Knockout — exact score bonus    | +2     |
+| Standings — exact position      | 4      |
+| Standings — off by one          | 2      |
+| Extras — champion               | 10     |
+| Extras — runner-up              | 5      |
+| Extras — top scorer             | 8      |
+| Extras — dark horse             | 6      |
+| Podium — 1st place              | 15     |
+| Podium — 2nd place              | 10     |
+| Podium — 3rd place              | 8      |
 
 ### Early prediction bonus
 
 Correct **match** predictions earn extra points when saved well before lock. Bonus tiers (added on top of base match points):
 
 | Hours before lock | Bonus |
-|-------------------|-------|
-| 48+ | +3 |
-| 24+ | +2 |
-| 6+ | +1 |
+| ----------------- | ----- |
+| 48+               | +3    |
+| 24+               | +2    |
+| 6+                | +1    |
 
 - **Lock** = kickoff minus 15 minutes (same as the prediction deadline).
 - Bonus uses your **last save time** — editing closer to kickoff reduces or removes the bonus.
@@ -174,13 +174,13 @@ Correct **match** predictions earn extra points when saved well before lock. Bon
 
 ### Locking windows
 
-| Prediction type | Opens | Locks |
-|-----------------|-------|-------|
-| Group matches | Immediately | 15 min before kickoff |
-| Knockout matches | After previous round is fully finished (admin) | 15 min before kickoff |
-| Group standings | Immediately | Tournament start |
-| Tournament extras | Immediately | Tournament start |
-| Podium | ~180 days before tournament | Permanently on submit; closed at tournament start |
+| Prediction type   | Opens                                          | Locks                                             |
+| ----------------- | ---------------------------------------------- | ------------------------------------------------- |
+| Group matches     | Immediately                                    | 15 min before kickoff                             |
+| Knockout matches  | After previous round is fully finished (admin) | 15 min before kickoff                             |
+| Group standings   | Immediately                                    | Tournament start                                  |
+| Tournament extras | Immediately                                    | Tournament start                                  |
+| Podium            | ~180 days before tournament                    | Permanently on submit; closed at tournament start |
 
 Match predictions can be **edited freely until lock**. After lock, during the match, or after the final whistle — no changes.
 
@@ -188,12 +188,12 @@ Match predictions can be **edited freely until lock**. After lock, during the ma
 
 A separate prediction at `/podium` where users pick the **top 3 teams** (champion, runner-up, third place). Key differences from tournament extras:
 
-| | Podium | Tournament extras |
-|---|--------|-------------------|
-| Positions | 1st, 2nd, 3rd only | Champion, runner-up, top scorer, dark horse |
-| Editable? | **No** — locked forever on submit | Yes, until tournament start |
-| Coin cost? | **Yes** — decays over time | Documented; not enforced yet |
-| Points | 15 / 10 / 8 per correct position | 10 / 5 / 8 / 6 |
+|            | Podium                            | Tournament extras                           |
+| ---------- | --------------------------------- | ------------------------------------------- |
+| Positions  | 1st, 2nd, 3rd only                | Champion, runner-up, top scorer, dark horse |
+| Editable?  | **No** — locked forever on submit | Yes, until tournament start                 |
+| Coin cost? | **Yes** — decays over time        | Documented; not enforced yet                |
+| Points     | 15 / 10 / 8 per correct position  | 10 / 5 / 8 / 6                              |
 
 **Coin cost decay** (linear between open and lock):
 
@@ -294,9 +294,9 @@ Production runs on **Cloudflare Workers + D1**. See **[DEPLOYMENT.md](./DEPLOYME
 
 Workflow: [`.github/workflows/ci.yml`](./.github/workflows/ci.yml)
 
-| Trigger | What runs |
-|---------|-----------|
-| Pull request | `pnpm check` + `pnpm lint` |
+| Trigger        | What runs                        |
+| -------------- | -------------------------------- |
+| Pull request   | `pnpm check` + `pnpm lint`       |
 | Push to `main` | Check + lint, then `pnpm deploy` |
 
 **One-time setup:** add a `CLOUDFLARE_API_TOKEN` repository secret (Cloudflare API token with **Workers Scripts Edit**). Worker runtime secrets (`ORIGIN`, `BETTER_AUTH_SECRET`, `BALE_*`, `ADMIN_PHONE_NUMBERS`) are stored in Cloudflare via `wrangler secret put` and persist across deploys.

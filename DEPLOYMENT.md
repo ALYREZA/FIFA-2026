@@ -21,13 +21,13 @@ External services:
 
 ## Prerequisites
 
-| Requirement | Notes |
-|-------------|-------|
-| Node.js 22+ | Required by Wrangler; same as local development |
-| pnpm | `pnpm install` |
-| Cloudflare account | [dash.cloudflare.com](https://dash.cloudflare.com) |
-| Wrangler CLI | Included as a dev dependency (`pnpm wrangler`) |
-| Bale Safir credentials | [Bale gateway docs](https://docs.bale.ai/gateway) |
+| Requirement            | Notes                                              |
+| ---------------------- | -------------------------------------------------- |
+| Node.js 22+            | Required by Wrangler; same as local development    |
+| pnpm                   | `pnpm install`                                     |
+| Cloudflare account     | [dash.cloudflare.com](https://dash.cloudflare.com) |
+| Wrangler CLI           | Included as a dev dependency (`pnpm wrangler`)     |
+| Bale Safir credentials | [Bale gateway docs](https://docs.bale.ai/gateway)  |
 
 ## First-time setup
 
@@ -103,13 +103,13 @@ pnpm wrangler secret put ADMIN_PHONE_NUMBERS
 pnpm wrangler secret put ORIGIN
 ```
 
-| Secret | Value |
-|--------|-------|
-| `BETTER_AUTH_SECRET` | 32+ character random string ([better-auth docs](https://www.better-auth.com/docs/installation)) |
-| `BALE_CLIENT_ID` | From Bale Safir dashboard |
-| `BALE_CLIENT_SECRET` | From Bale Safir dashboard |
-| `ADMIN_PHONE_NUMBERS` | Comma-separated phones, format `989XXXXXXXXX` |
-| `ORIGIN` | Production URL with no trailing slash, e.g. `https://fifa-2026.yourdomain.com` |
+| Secret                | Value                                                                                           |
+| --------------------- | ----------------------------------------------------------------------------------------------- |
+| `BETTER_AUTH_SECRET`  | 32+ character random string ([better-auth docs](https://www.better-auth.com/docs/installation)) |
+| `BALE_CLIENT_ID`      | From Bale Safir dashboard                                                                       |
+| `BALE_CLIENT_SECRET`  | From Bale Safir dashboard                                                                       |
+| `ADMIN_PHONE_NUMBERS` | Comma-separated phones, format `989XXXXXXXXX`                                                   |
+| `ORIGIN`              | Production URL with no trailing slash, e.g. `https://fifa-2026.yourdomain.com`                  |
 
 Generate a strong secret:
 
@@ -177,12 +177,12 @@ ADMIN_PHONE_NUMBERS=989XXXXXXXXX
 
 ## Updating a live deployment
 
-| Change type | Steps |
-|-------------|-------|
-| App code | `pnpm deploy` |
-| New SQL migration | Add file under `migrations/`, run `pnpm wrangler d1 execute fifa-2026 --remote --file=migrations/XXXX.sql`, then `pnpm deploy` |
-| Secret / env var | `pnpm wrangler secret put <NAME>`, then `pnpm deploy` (redeploy ensures Workers pick up changes) |
-| Schema via Drizzle | `pnpm db:push`, then `pnpm deploy` |
+| Change type        | Steps                                                                                                                          |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| App code           | `pnpm deploy`                                                                                                                  |
+| New SQL migration  | Add file under `migrations/`, run `pnpm wrangler d1 execute fifa-2026 --remote --file=migrations/XXXX.sql`, then `pnpm deploy` |
+| Secret / env var   | `pnpm wrangler secret put <NAME>`, then `pnpm deploy` (redeploy ensures Workers pick up changes)                               |
+| Schema via Drizzle | `pnpm db:push`, then `pnpm deploy`                                                                                             |
 
 ## Environment variable reference
 
@@ -190,38 +190,38 @@ ADMIN_PHONE_NUMBERS=989XXXXXXXXX
 
 Set via `wrangler secret put`. Required in production.
 
-| Variable | Description |
-|----------|-------------|
-| `ORIGIN` | Public app URL |
-| `BETTER_AUTH_SECRET` | Auth signing secret |
-| `BALE_CLIENT_ID` | Bale Safir client ID |
-| `BALE_CLIENT_SECRET` | Bale Safir client secret |
+| Variable              | Description                                    |
+| --------------------- | ---------------------------------------------- |
+| `ORIGIN`              | Public app URL                                 |
+| `BETTER_AUTH_SECRET`  | Auth signing secret                            |
+| `BALE_CLIENT_ID`      | Bale Safir client ID                           |
+| `BALE_CLIENT_SECRET`  | Bale Safir client secret                       |
 | `ADMIN_PHONE_NUMBERS` | Admin phones (`989XXXXXXXXX`, comma-separated) |
 
 ### Local-only (`.env`)
 
 Used by Drizzle Kit for remote schema operations. **Not** injected into the Worker.
 
-| Variable | Description |
-|----------|-------------|
-| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare account ID |
+| Variable                 | Description                               |
+| ------------------------ | ----------------------------------------- |
+| `CLOUDFLARE_ACCOUNT_ID`  | Cloudflare account ID                     |
 | `CLOUDFLARE_DATABASE_ID` | D1 database ID (same as `wrangler.jsonc`) |
-| `CLOUDFLARE_D1_TOKEN` | API token with D1 Edit permission |
+| `CLOUDFLARE_D1_TOKEN`    | API token with D1 Edit permission         |
 
 ### Automatic bindings (`wrangler.jsonc`)
 
-| Binding | Description |
-|---------|-------------|
-| `DB` | D1 database — no secret needed, configured in `wrangler.jsonc` |
-| `ASSETS` | Static assets from the SvelteKit build |
+| Binding  | Description                                                    |
+| -------- | -------------------------------------------------------------- |
+| `DB`     | D1 database — no secret needed, configured in `wrangler.jsonc` |
+| `ASSETS` | Static assets from the SvelteKit build                         |
 
 ## CI/CD
 
 GitHub Actions workflow: [`.github/workflows/ci.yml`](./.github/workflows/ci.yml)
 
-| Trigger | Jobs |
-|---------|------|
-| Pull request | `check` — `pnpm check` + `pnpm lint` |
+| Trigger        | Jobs                                   |
+| -------------- | -------------------------------------- |
+| Pull request   | `check` — `pnpm check` + `pnpm lint`   |
 | Push to `main` | `check`, then `deploy` — `pnpm deploy` |
 
 ### One-time setup
@@ -234,14 +234,14 @@ Worker secrets (`BETTER_AUTH_SECRET`, `BALE_*`, `ORIGIN`, etc.) are stored in Cl
 
 ## Troubleshooting
 
-| Symptom | Likely cause | Fix |
-|---------|--------------|-----|
-| Auth cookies not set | `ORIGIN` mismatch | Set `ORIGIN` to the exact URL in the browser bar |
-| OTP not sent | Invalid Bale credentials or rate limit | Check Bale dashboard; see [Bale docs](https://docs.bale.ai/gateway) |
-| `DB is not defined` locally | Using `pnpm dev` | Use `pnpm build && pnpm preview` |
-| Admin pages 403 | Phone not in `ADMIN_PHONE_NUMBERS` | Use `989XXXXXXXXX` format, no leading `0` |
-| Database errors after deploy | Migrations not applied remotely | Run `pnpm db:remote` |
-| Build fails on types | Wrangler bindings out of date | Run `pnpm gen` after changing `wrangler.jsonc` |
+| Symptom                      | Likely cause                           | Fix                                                                 |
+| ---------------------------- | -------------------------------------- | ------------------------------------------------------------------- |
+| Auth cookies not set         | `ORIGIN` mismatch                      | Set `ORIGIN` to the exact URL in the browser bar                    |
+| OTP not sent                 | Invalid Bale credentials or rate limit | Check Bale dashboard; see [Bale docs](https://docs.bale.ai/gateway) |
+| `DB is not defined` locally  | Using `pnpm dev`                       | Use `pnpm build && pnpm preview`                                    |
+| Admin pages 403              | Phone not in `ADMIN_PHONE_NUMBERS`     | Use `989XXXXXXXXX` format, no leading `0`                           |
+| Database errors after deploy | Migrations not applied remotely        | Run `pnpm db:remote`                                                |
+| Build fails on types         | Wrangler bindings out of date          | Run `pnpm gen` after changing `wrangler.jsonc`                      |
 
 ## Quick checklist
 

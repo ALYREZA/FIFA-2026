@@ -29,9 +29,7 @@ export const load: PageServerLoad = async ({ locals, platform }) => {
 	const stageOrderMap = new Map(stages.map((s) => [s.id, s.order]));
 	const teamMap = Object.fromEntries(teams.map((t) => [t.id, t]));
 
-	const knockoutMatches = matches.filter((m) =>
-		knockoutStages.some((s) => s.id === m.stageId)
-	);
+	const knockoutMatches = matches.filter((m) => knockoutStages.some((s) => s.id === m.stageId));
 
 	const bracketMatches: BracketMatch[] = knockoutMatches.map((m) => ({
 		id: m.id,

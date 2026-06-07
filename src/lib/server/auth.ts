@@ -9,7 +9,7 @@ import { telegramMiniApp } from '$lib/server/auth/telegram-miniapp';
 import { sendBaleOtp } from '$lib/server/bale/safir';
 import { isValidBalePhone } from '$lib/server/phone';
 
-const authConfig = ({
+const authConfig = {
 	baseURL: env.ORIGIN,
 	secret: env.BETTER_AUTH_SECRET,
 	emailAndPassword: { enabled: false },
@@ -40,7 +40,7 @@ const authConfig = ({
 		}),
 		sveltekitCookies(getRequestEvent)
 	]
-}) satisfies Omit<Parameters<typeof betterAuth>[0], 'database'>;
+} satisfies Omit<Parameters<typeof betterAuth>[0], 'database'>;
 
 export const createAuth = (d1: D1Database) =>
 	betterAuth({

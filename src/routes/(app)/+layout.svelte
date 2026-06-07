@@ -77,7 +77,7 @@
 			{#each navItems as item (item.href)}
 				<a
 					href={resolve(item.href)}
-					class="whitespace-nowrap rounded-lg px-3 py-2 text-xs text-muted hover:bg-accent-muted hover:text-accent-text"
+					class="rounded-lg px-3 py-2 text-xs whitespace-nowrap text-muted hover:bg-accent-muted hover:text-accent-text"
 				>
 					{item.label()}
 				</a>
@@ -85,7 +85,7 @@
 			{#if data.isAdmin}
 				<a
 					href={resolve('/admin/matches')}
-					class="whitespace-nowrap rounded-lg px-3 py-2 text-xs text-admin hover:bg-warning-bg"
+					class="rounded-lg px-3 py-2 text-xs whitespace-nowrap text-admin hover:bg-warning-bg"
 				>
 					{m.nav_admin()}
 				</a>

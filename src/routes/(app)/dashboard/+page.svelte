@@ -86,7 +86,7 @@
 								<span class="text-sm">
 									<span class="me-2 text-subtle">#{i + 1}</span>
 									{#if entry.username}
-										<a href={profileHref(entry.username)} class="link">
+										<a href={resolve(profileHref(entry.username))} class="link">
 											@{entry.username}
 										</a>
 									{:else}

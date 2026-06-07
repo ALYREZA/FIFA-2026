@@ -1,6 +1,5 @@
 import { and, eq } from 'drizzle-orm';
 import type { Database } from '$lib/server/db';
-import { user } from '$lib/server/db/auth.schema';
 import { userScores } from '$lib/server/db/forecast.schema';
 import {
 	getUserExtras,

@@ -22,13 +22,13 @@ declare global {
 			env: Env;
 			ctx: ExecutionContext;
 			caches: CacheStorage;
-			cf?: IncomingRequestCfProperties
+			cf?: IncomingRequestCfProperties;
 		}
 
 		interface Locals {
 			user?: AppUser;
 			session?: Session;
-			auth: ReturnType<typeof createAuth>
+			auth: ReturnType<typeof createAuth>;
 		}
 
 		// interface Error {}

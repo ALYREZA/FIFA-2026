@@ -20,12 +20,7 @@ export async function updateMatchResult(
 	const [match] = await db.select().from(matches).where(eq(matches.id, matchId)).limit(1);
 	if (!match) return { error: { code: 'not_found', message: 'Match not found' } };
 
-	const winnerTeamId = getWinnerTeamId(
-		match.homeTeamId,
-		match.awayTeamId,
-		homeScore,
-		awayScore
-	);
+	const winnerTeamId = getWinnerTeamId(match.homeTeamId, match.awayTeamId, homeScore, awayScore);
 
 	await db
 		.update(matches)

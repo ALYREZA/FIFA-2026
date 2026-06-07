@@ -73,7 +73,9 @@ export function initTelegramWebApp(): (() => void) | undefined {
 	return initTelegramTheme();
 }
 
-export async function signInWithTelegram(initData: string): Promise<{ ok: true } | { ok: false; message: string }> {
+export async function signInWithTelegram(
+	initData: string
+): Promise<{ ok: true } | { ok: false; message: string }> {
 	const response = await fetch('/api/auth/sign-in/telegram', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },

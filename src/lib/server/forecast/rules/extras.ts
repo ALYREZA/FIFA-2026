@@ -6,21 +6,27 @@ import type {
 	ValidationError
 } from './types';
 
-export function validateTournamentExtras(
-	input: TournamentExtrasInput
-): ValidationError | null {
+export function validateTournamentExtras(input: TournamentExtrasInput): ValidationError | null {
 	if (!input.championTeamId) {
 		return { code: 'champion_required', message: 'Champion pick is required' };
 	}
 
-	if (input.championTeamId && input.runnerUpTeamId && input.championTeamId === input.runnerUpTeamId) {
+	if (
+		input.championTeamId &&
+		input.runnerUpTeamId &&
+		input.championTeamId === input.runnerUpTeamId
+	) {
 		return {
 			code: 'same_champion_runner_up',
 			message: 'Champion and runner-up must be different teams'
 		};
 	}
 
-	if (input.championTeamId && input.darkHorseTeamId && input.championTeamId === input.darkHorseTeamId) {
+	if (
+		input.championTeamId &&
+		input.darkHorseTeamId &&
+		input.championTeamId === input.darkHorseTeamId
+	) {
 		return {
 			code: 'dark_horse_is_champion',
 			message: 'Dark horse cannot be the same as your champion pick'

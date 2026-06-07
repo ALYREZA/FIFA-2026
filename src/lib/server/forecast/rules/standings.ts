@@ -6,9 +6,7 @@ import type {
 	ValidationError
 } from './types';
 
-export function validateGroupStandings(
-	predictions: GroupStandingInput[]
-): ValidationError | null {
+export function validateGroupStandings(predictions: GroupStandingInput[]): ValidationError | null {
 	const byGroup = new Map<string, GroupStandingInput[]>();
 
 	for (const prediction of predictions) {

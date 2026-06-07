@@ -34,10 +34,7 @@ export function scoreKnockoutPrediction(
 		breakdown.total += rules.knockout.correctWinner;
 	}
 
-	if (
-		predicted.homeScore === actual.homeScore &&
-		predicted.awayScore === actual.awayScore
-	) {
+	if (predicted.homeScore === actual.homeScore && predicted.awayScore === actual.awayScore) {
 		breakdown.exactScore = rules.knockout.exactScoreBonus;
 		breakdown.total += rules.knockout.exactScoreBonus;
 	}

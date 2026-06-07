@@ -22,11 +22,7 @@ export function buildBracketPredictionMap(
 		const prediction = predictions[match.id];
 		if (!prediction) continue;
 
-		winners[match.id] = deriveWinnerFromPrediction(
-			prediction,
-			match.homeTeamId,
-			match.awayTeamId
-		);
+		winners[match.id] = deriveWinnerFromPrediction(prediction, match.homeTeamId, match.awayTeamId);
 	}
 
 	return winners;
@@ -86,7 +82,12 @@ export function validateBracketConsistency(
 		};
 	}
 
-	if (homeTeamId && awayTeamId && predictedWinner !== homeTeamId && predictedWinner !== awayTeamId) {
+	if (
+		homeTeamId &&
+		awayTeamId &&
+		predictedWinner !== homeTeamId &&
+		predictedWinner !== awayTeamId
+	) {
 		return {
 			code: 'invalid_winner',
 			message: 'Predicted winner must be one of the teams in this match'

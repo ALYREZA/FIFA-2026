@@ -1,12 +1,7 @@
 import type { StageType } from '$lib/server/db/forecast.schema';
 import { scoreGroupPrediction } from './group-stage';
 import { scoreKnockoutPrediction } from './knockout';
-import type {
-	MatchPredictionInput,
-	MatchResult,
-	ScoreBreakdown,
-	ScoringRules
-} from './types';
+import type { MatchPredictionInput, MatchResult, ScoreBreakdown, ScoringRules } from './types';
 
 const KNOCKOUT_STAGES: StageType[] = ['r32', 'r16', 'qf', 'sf', 'third_place', 'final'];
 

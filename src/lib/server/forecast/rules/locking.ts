@@ -36,10 +36,7 @@ export function isStageUnlocked(
 	return true;
 }
 
-export function validateMatchLock(
-	match: MatchContext,
-	now: Date
-): ValidationError | null {
+export function validateMatchLock(match: MatchContext, now: Date): ValidationError | null {
 	if (isMatchLocked(match, now)) {
 		return {
 			code: 'match_locked',
@@ -65,10 +62,7 @@ export function validateStageUnlock(
 	return null;
 }
 
-export function validateExtrasLock(
-	extrasLockedAt: Date | null,
-	now: Date
-): ValidationError | null {
+export function validateExtrasLock(extrasLockedAt: Date | null, now: Date): ValidationError | null {
 	if (extrasLockedAt && now >= extrasLockedAt) {
 		return {
 			code: 'extras_locked',

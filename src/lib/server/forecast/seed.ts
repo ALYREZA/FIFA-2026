@@ -22,12 +22,24 @@ const TOURNAMENT_START = new Date('2026-06-11T17:00:00Z');
 const EXTRAS_LOCK = new Date('2026-06-11T17:00:00Z');
 
 const STAGE_DEFS = [
-	{ id: 'stage-group', type: 'group' as const, name: 'Group Stage', order: 1, unlockAfterOrder: null },
+	{
+		id: 'stage-group',
+		type: 'group' as const,
+		name: 'Group Stage',
+		order: 1,
+		unlockAfterOrder: null
+	},
 	{ id: 'stage-r32', type: 'r32' as const, name: 'Round of 32', order: 2, unlockAfterOrder: 1 },
 	{ id: 'stage-r16', type: 'r16' as const, name: 'Round of 16', order: 3, unlockAfterOrder: 2 },
 	{ id: 'stage-qf', type: 'qf' as const, name: 'Quarter-finals', order: 4, unlockAfterOrder: 3 },
 	{ id: 'stage-sf', type: 'sf' as const, name: 'Semi-finals', order: 5, unlockAfterOrder: 4 },
-	{ id: 'stage-third', type: 'third_place' as const, name: 'Third-place play-off', order: 6, unlockAfterOrder: 5 },
+	{
+		id: 'stage-third',
+		type: 'third_place' as const,
+		name: 'Third-place play-off',
+		order: 6,
+		unlockAfterOrder: 5
+	},
 	{ id: 'stage-final', type: 'final' as const, name: 'Final', order: 7, unlockAfterOrder: 5 }
 ];
 

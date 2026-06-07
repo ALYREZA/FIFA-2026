@@ -1,11 +1,7 @@
 import type { StageType } from '$lib/server/db/forecast.schema';
 import { validateBracketConsistency, type BracketMatch } from './bracket';
 import { validateMatchLock, validateStageUnlock, type StageContext } from './locking';
-import type {
-	MatchContext,
-	MatchPredictionInput,
-	ValidationError
-} from './types';
+import type { MatchContext, MatchPredictionInput, ValidationError } from './types';
 
 const KNOCKOUT_STAGES: StageType[] = ['r32', 'r16', 'qf', 'sf', 'third_place', 'final'];
 
@@ -41,12 +37,7 @@ export function validateMatchPrediction(
 		}
 
 		if (bracketMatches && existingPredictions) {
-			return validateBracketConsistency(
-				bracketMatches,
-				existingPredictions,
-				match.id,
-				prediction
-			);
+			return validateBracketConsistency(bracketMatches, existingPredictions, match.id, prediction);
 		}
 	}
 

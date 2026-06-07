@@ -2,15 +2,7 @@ import { relations, sql } from 'drizzle-orm';
 import { index, integer, sqliteTable, text, unique } from 'drizzle-orm/sqlite-core';
 import { user } from './auth.schema';
 
-export const STAGE_TYPES = [
-	'group',
-	'r32',
-	'r16',
-	'qf',
-	'sf',
-	'third_place',
-	'final'
-] as const;
+export const STAGE_TYPES = ['group', 'r32', 'r16', 'qf', 'sf', 'third_place', 'final'] as const;
 
 export type StageType = (typeof STAGE_TYPES)[number];
 

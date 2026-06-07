@@ -39,18 +39,22 @@ const hidden = [
 ];
 const wranglerArgs = write ? ['types'] : ['types', '--check'];
 
-let status = 0;
+let exitCode;
 try {
-	const result = spawnSync(process.execPath, [join(root, 'scripts/wrangler.mjs'), ...wranglerArgs], {
-		cwd: root,
-		env: process.env,
-		stdio: 'inherit'
-	});
-	status = result.status ?? 1;
+	const result = spawnSync(
+		process.execPath,
+		[join(root, 'scripts/wrangler.mjs'), ...wranglerArgs],
+		{
+			cwd: root,
+			env: process.env,
+			stdio: 'inherit'
+		}
+	);
+	exitCode = result.status ?? 1;
 } finally {
 	for (const entry of hidden) {
 		restore(entry);
 	}
 }
 
-process.exit(status);
+process.exit(exitCode ?? 1);

@@ -3,7 +3,6 @@ import type { Database } from '$lib/server/db';
 import {
 	matchPredictions,
 	matches,
-	stages,
 	groupStandingPredictions,
 	podiumPredictions,
 	tournamentExtrasPredictions
@@ -30,8 +29,7 @@ import {
 	getActiveTournament,
 	getCompletedStageOrders,
 	getTournamentMatches,
-	getTournamentStages,
-	parseScoringRules
+	getTournamentStages
 } from './tournament';
 
 export async function getUserMatchPredictions(db: Database, userId: string, tournamentId: string) {
@@ -123,11 +121,7 @@ export async function submitMatchPrediction(
 
 	if (validationError) return { error: validationError };
 
-	const winnerTeamId = deriveWinnerFromPrediction(
-		prediction,
-		match.homeTeamId,
-		match.awayTeamId
-	);
+	const winnerTeamId = deriveWinnerFromPrediction(prediction, match.homeTeamId, match.awayTeamId);
 	const now = new Date();
 	const existing = await db
 		.select()
@@ -286,10 +280,7 @@ export async function getUserPodium(db: Database, userId: string, tournamentId: 
 		.select()
 		.from(podiumPredictions)
 		.where(
-			and(
-				eq(podiumPredictions.userId, userId),
-				eq(podiumPredictions.tournamentId, tournamentId)
-			)
+			and(eq(podiumPredictions.userId, userId), eq(podiumPredictions.tournamentId, tournamentId))
 		)
 		.limit(1);
 	return podium ?? null;

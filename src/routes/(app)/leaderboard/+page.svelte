@@ -36,7 +36,7 @@
 							<td class="px-4 py-3 text-subtle">{i + 1}</td>
 							<td class="px-4 py-3 font-medium text-foreground">
 								{#if entry.username}
-									<a href={profileHref(entry.username)} class="link">
+									<a href={resolve(profileHref(entry.username))} class="link">
 										@{entry.username}
 									</a>
 								{:else}

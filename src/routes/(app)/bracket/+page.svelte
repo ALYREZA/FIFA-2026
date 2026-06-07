@@ -18,7 +18,7 @@
 		<div class="space-y-4">
 			{#each data.bracket as match (match.id)}
 				<div class="card p-4 sm:p-5">
-					<p class="mb-3 text-xs font-medium uppercase tracking-wide text-accent-text">
+					<p class="mb-3 text-xs font-medium tracking-wide text-accent-text uppercase">
 						{match.stageName}
 					</p>
 					<div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">

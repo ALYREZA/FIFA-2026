@@ -70,10 +70,7 @@ async function getAccessToken(): Promise<string> {
 
 function mapBaleError(error: BaleError, status: number): BaleOtpError {
 	if (status === 404 && error.code === 17) {
-		return new BaleOtpError(
-			'This phone number does not have a Bale account',
-			'no_bale_account'
-		);
+		return new BaleOtpError('This phone number does not have a Bale account', 'no_bale_account');
 	}
 
 	if (error.code === 18) {

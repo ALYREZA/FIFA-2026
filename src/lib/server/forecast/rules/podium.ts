@@ -23,11 +23,7 @@ export function getPodiumLocksAt(extrasLockedAt: Date | null, tournamentStartsAt
 	return extrasLockedAt ?? tournamentStartsAt;
 }
 
-export function calculatePodiumCost(
-	now: Date,
-	opensAt: Date,
-	locksAt: Date
-): number {
+export function calculatePodiumCost(now: Date, opensAt: Date, locksAt: Date): number {
 	const { maxCost, minCost } = COIN_RULES.podium;
 
 	if (now >= locksAt) return minCost;

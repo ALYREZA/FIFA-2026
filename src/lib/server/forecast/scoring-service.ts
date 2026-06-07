@@ -8,7 +8,6 @@ import {
 	matchPredictions,
 	matches,
 	podiumPredictions,
-	stages,
 	tournamentExtrasPredictions,
 	userScores
 } from '$lib/server/db/forecast.schema';
@@ -39,9 +38,7 @@ export async function scoreUserPredictions(db: Database, userId: string, tournam
 		})
 		.from(matchPredictions)
 		.innerJoin(matches, eq(matchPredictions.matchId, matches.id))
-		.where(
-			and(eq(matchPredictions.userId, userId), eq(matches.tournamentId, tournamentId))
-		);
+		.where(and(eq(matchPredictions.userId, userId), eq(matches.tournamentId, tournamentId)));
 
 	let matchPoints = 0;
 	let exactScores = 0;
@@ -181,10 +178,7 @@ export async function scoreUserPredictions(db: Database, userId: string, tournam
 		.select()
 		.from(podiumPredictions)
 		.where(
-			and(
-				eq(podiumPredictions.userId, userId),
-				eq(podiumPredictions.tournamentId, tournamentId)
-			)
+			and(eq(podiumPredictions.userId, userId), eq(podiumPredictions.tournamentId, tournamentId))
 		)
 		.limit(1);
 

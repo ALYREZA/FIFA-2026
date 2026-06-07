@@ -2,12 +2,7 @@ import { fail } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 import { getDb } from '$lib/server/db';
 import { matches, stages, teams } from '$lib/server/db/forecast.schema';
-import {
-	saveActualGroupStandings,
-	saveActualTournamentExtras,
-	triggerRescoreAll,
-	updateMatchResult
-} from '$lib/server/forecast/admin-service';
+import { triggerRescoreAll, updateMatchResult } from '$lib/server/forecast/admin-service';
 import { reseedTournament, seedTournamentIfNeeded } from '$lib/server/forecast/seed';
 import { getActiveTournament } from '$lib/server/forecast/tournament';
 import type { Actions, PageServerLoad } from './$types';
@@ -30,9 +25,7 @@ export const load: PageServerLoad = async ({ platform, url }) => {
 	const stageMap = Object.fromEntries(allStages.map((s) => [s.id, s]));
 
 	const filtered =
-		stageFilter === 'all'
-			? allMatches
-			: allMatches.filter((m) => m.stageId === stageFilter);
+		stageFilter === 'all' ? allMatches : allMatches.filter((m) => m.stageId === stageFilter);
 
 	return {
 		tournament,
