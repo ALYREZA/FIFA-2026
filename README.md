@@ -35,7 +35,7 @@ This is **not** a betting app — no stakes, odds, real-money wallets, or cash p
 
 ## Prerequisites
 
-- Node.js 20+
+- Node.js 22+ (required by Wrangler)
 - [pnpm](https://pnpm.io/) — **use pnpm for this project** (not Yarn PnP from a parent monorepo)
 - Bale Safir OTP credentials ([Bale gateway](https://docs.bale.ai/gateway))
 - Cloudflare account (for production D1)

@@ -23,7 +23,7 @@ External services:
 
 | Requirement | Notes |
 |-------------|-------|
-| Node.js 20+ | Same as local development |
+| Node.js 22+ | Required by Wrangler; same as local development |
 | pnpm | `pnpm install` |
 | Cloudflare account | [dash.cloudflare.com](https://dash.cloudflare.com) |
 | Wrangler CLI | Included as a dev dependency (`pnpm wrangler`) |
