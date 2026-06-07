@@ -36,36 +36,25 @@
 
 <div class="space-y-6">
 	<div class="flex flex-wrap items-center justify-between gap-4">
-		<h1 class="text-2xl font-bold text-white">{m.admin_matches()}</h1>
+		<h1 class="page-title">{m.admin_matches()}</h1>
 		<div class="flex flex-wrap gap-2">
-			<a
-				href={resolve('/admin/results')}
-				class="rounded-lg border border-slate-700 px-3 py-1.5 text-sm text-slate-300 hover:border-emerald-800"
-			>
+			<a href={resolve('/admin/results')} class="btn-ghost px-3 py-1.5 text-sm">
 				{m.admin_results()}
 			</a>
-			<button
-				type="button"
-				onclick={handleRescore}
-				class="rounded-lg bg-emerald-800 px-3 py-1.5 text-sm text-white hover:bg-emerald-700"
-			>
+			<button type="button" onclick={handleRescore} class="btn-primary px-3 py-1.5 text-sm">
 				{m.admin_rescore()}
 			</button>
-			<button
-				type="button"
-				onclick={handleReseed}
-				class="rounded-lg border border-amber-800 px-3 py-1.5 text-sm text-amber-300 hover:bg-amber-950"
-			>
+			<button type="button" onclick={handleReseed} class="btn-admin px-3 py-1.5 text-sm">
 				{m.admin_reseed()}
 			</button>
 		</div>
 	</div>
 
 	{#if form?.reseeded}
-		<p class="rounded-lg bg-emerald-950 px-4 py-2 text-sm text-emerald-300">{m.admin_reseed_done()}</p>
+		<p class="alert-success px-4 py-2">{m.admin_reseed_done()}</p>
 	{/if}
 	{#if form?.usersScored !== undefined}
-		<p class="rounded-lg bg-emerald-950 px-4 py-2 text-sm text-emerald-300">
+		<p class="alert-success px-4 py-2">
 			{m.admin_rescore_done({ count: String(form.usersScored) })}
 		</p>
 	{/if}
@@ -74,9 +63,7 @@
 		<button
 			type="button"
 			onclick={() => filterStage('all')}
-			class="rounded-lg px-3 py-1 text-xs {data.stageFilter === 'all'
-				? 'bg-emerald-700 text-white'
-				: 'bg-slate-800 text-slate-400'}"
+			class={data.stageFilter === 'all' ? 'chip-active' : 'chip-inactive'}
 		>
 			{m.admin_filter_all()}
 		</button>
@@ -84,9 +71,7 @@
 			<button
 				type="button"
 				onclick={() => filterStage(stage.id)}
-				class="rounded-lg px-3 py-1 text-xs {data.stageFilter === stage.id
-					? 'bg-emerald-700 text-white'
-					: 'bg-slate-800 text-slate-400'}"
+				class={data.stageFilter === stage.id ? 'chip-active' : 'chip-inactive'}
 			>
 				{stage.name}
 			</button>
@@ -97,8 +82,8 @@
 		{#each data.matches ?? [] as match (match.id)}
 			{@const homeScore = match.homeScore ?? 0}
 			{@const awayScore = match.awayScore ?? 0}
-			<div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
-				<div class="mb-2 flex justify-between text-xs text-slate-500">
+			<div class="card p-4">
+				<div class="mb-2 flex justify-between text-xs text-subtle">
 					<span>{match.stage?.name}</span>
 					<span>{match.kickoffAt.toLocaleString()}</span>
 				</div>
@@ -112,24 +97,21 @@
 						min="0"
 						value={homeScore}
 						id="home-{match.id}"
-						class="w-14 rounded border border-slate-700 bg-slate-800 px-2 py-1 text-center"
+						class="input w-14 px-2 py-1 text-center"
 					/>
-					<span class="text-slate-600">–</span>
+					<span class="text-subtle">–</span>
 					<input
 						type="number"
 						min="0"
 						value={awayScore}
 						id="away-{match.id}"
-						class="w-14 rounded border border-slate-700 bg-slate-800 px-2 py-1 text-center"
+						class="input w-14 px-2 py-1 text-center"
 					/>
 					<span class="min-w-24 text-sm">
 						{match.awayTeam?.code ?? 'TBD'}
 						{match.awayTeam?.flagEmoji ?? '—'}
 					</span>
-					<select
-						id="status-{match.id}"
-						class="rounded border border-slate-700 bg-slate-800 px-2 py-1 text-sm"
-					>
+					<select id="status-{match.id}" class="input px-2 py-1 text-sm">
 						<option value="scheduled" selected={match.status === 'scheduled'}>scheduled</option>
 						<option value="live" selected={match.status === 'live'}>live</option>
 						<option value="finished" selected={match.status === 'finished'}>finished</option>
@@ -142,7 +124,7 @@
 							const status = (document.getElementById(`status-${match.id}`) as HTMLSelectElement).value;
 							handleSaveResult(match.id, home, away, status);
 						}}
-						class="rounded-lg bg-emerald-700 px-3 py-1.5 text-sm text-white hover:bg-emerald-600"
+						class="btn-primary px-3 py-1.5 text-sm"
 					>
 						{m.admin_save_result()}
 					</button>

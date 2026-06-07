@@ -17,12 +17,12 @@
 </script>
 
 {#if !data.tournament}
-	<p class="text-slate-400">{m.dashboard_no_tournament()}</p>
+	<p class="text-muted">{m.dashboard_no_tournament()}</p>
 {:else}
-	<div class="space-y-8">
+	<div class="space-y-6">
 		<div>
-			<h1 class="text-2xl font-bold text-white">{m.predict_title()}</h1>
-			<p class="mt-1 text-sm text-slate-400">
+			<h1 class="page-title">{m.predict_title()}</h1>
+			<p class="page-desc">
 				{m.predict_lock_hint({ minutes: String(data.tournament.lockMinutesBeforeKickoff) })}
 			</p>
 		</div>
@@ -31,12 +31,10 @@
 			{@const stageMatches = data.matches.filter((match) => match.stageId === stage.id)}
 			{#if stageMatches.length > 0}
 				<section>
-					<h2 class="mb-4 text-lg font-semibold text-emerald-400">{stage.name}</h2>
+					<h2 class="section-title mb-4">{stage.name}</h2>
 
 					{#if !stageMatches[0].stageUnlocked}
-						<p class="rounded-lg border border-amber-900/40 bg-amber-950/30 px-4 py-3 text-sm text-amber-300">
-							{m.predict_stage_locked()}
-						</p>
+						<p class="alert-warning px-4 py-3">{m.predict_stage_locked()}</p>
 					{:else}
 						<div class="grid gap-4 md:grid-cols-2">
 							{#each stageMatches as match (match.id)}

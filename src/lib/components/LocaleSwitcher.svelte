@@ -16,14 +16,14 @@
 	}
 </script>
 
-<div class="flex gap-1 rounded-lg border border-slate-700 p-0.5">
+<div class="flex gap-1 rounded-lg border border-border p-0.5">
 	{#each locales as locale (locale)}
 		<button
 			type="button"
 			onclick={() => handleLocaleChange(locale)}
 			class="rounded-md px-2 py-1 text-xs transition {getLocale() === locale
-				? 'bg-emerald-700 text-white'
-				: 'text-slate-400 hover:text-emerald-300'}"
+				? 'bg-accent text-on-accent'
+				: 'text-muted hover:text-accent-text'}"
 		>
 			{localeLabels[locale]?.() ?? locale}
 		</button>

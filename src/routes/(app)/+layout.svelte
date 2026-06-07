@@ -23,21 +23,21 @@
 	}
 </script>
 
-<div class="min-h-screen bg-slate-950 text-slate-100">
-	<header class="border-b border-emerald-900/50 bg-slate-900/80 backdrop-blur">
-		<div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
+<div class="min-h-screen bg-background text-foreground">
+	<header class="border-b border-header-border bg-header">
+		<div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
 			<div>
-				<a href={resolve('/dashboard')} class="text-lg font-bold text-emerald-400">
+				<a href={resolve('/dashboard')} class="text-lg font-bold text-accent-text">
 					{m.app_title()}
 				</a>
-				<p class="text-xs text-slate-400">{m.app_tagline()}</p>
+				<p class="text-xs text-muted">{m.app_tagline()}</p>
 			</div>
 
 			<nav class="hidden gap-1 md:flex">
 				{#each navItems as item (item.href)}
 					<a
 						href={resolve(item.href)}
-						class="rounded-lg px-3 py-2 text-sm text-slate-300 transition hover:bg-emerald-950 hover:text-emerald-300"
+						class="rounded-lg px-3 py-2 text-sm text-muted transition hover:bg-accent-muted hover:text-accent-text"
 					>
 						{item.label()}
 					</a>
@@ -45,43 +45,47 @@
 				{#if data.isAdmin}
 					<a
 						href={resolve('/admin/matches')}
-						class="rounded-lg px-3 py-2 text-sm text-amber-400 transition hover:bg-amber-950"
+						class="rounded-lg px-3 py-2 text-sm text-admin transition hover:bg-warning-bg"
 					>
 						{m.nav_admin()}
 					</a>
 				{/if}
 			</nav>
 
-			<div class="flex items-center gap-3">
+			<div class="flex items-center gap-2">
 				<LocaleSwitcher />
 				{#if data.user?.phoneNumber}
-					<span class="hidden text-sm text-slate-400 sm:inline" dir="ltr">
+					<span class="hidden text-sm text-muted sm:inline" dir="ltr">
 						{formatPhoneDisplay(data.user.phoneNumber)}
 					</span>
 				{/if}
-				<button
-					type="button"
-					onclick={handleSignOut}
-					class="rounded-lg border border-slate-700 px-3 py-1.5 text-sm text-slate-300 hover:border-emerald-800 hover:text-emerald-300"
-				>
+				<button type="button" onclick={handleSignOut} class="btn-ghost min-h-11">
 					{m.sign_out()}
 				</button>
 			</div>
 		</div>
 
-		<nav class="flex gap-1 overflow-x-auto border-t border-slate-800 px-4 py-2 md:hidden">
+		<nav class="flex gap-1 overflow-x-auto border-t border-border px-4 py-2 md:hidden">
 			{#each navItems as item (item.href)}
 				<a
 					href={resolve(item.href)}
-					class="whitespace-nowrap rounded-lg px-3 py-1.5 text-xs text-slate-300 hover:bg-emerald-950"
+					class="whitespace-nowrap rounded-lg px-3 py-2 text-xs text-muted hover:bg-accent-muted hover:text-accent-text"
 				>
 					{item.label()}
 				</a>
 			{/each}
+			{#if data.isAdmin}
+				<a
+					href={resolve('/admin/matches')}
+					class="whitespace-nowrap rounded-lg px-3 py-2 text-xs text-admin hover:bg-warning-bg"
+				>
+					{m.nav_admin()}
+				</a>
+			{/if}
 		</nav>
 	</header>
 
-	<main class="mx-auto max-w-6xl px-4 py-8">
+	<main class="mx-auto max-w-6xl px-4 py-6">
 		{@render children()}
 	</main>
 </div>

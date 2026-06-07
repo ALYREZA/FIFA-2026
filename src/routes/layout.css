@@ -2,10 +2,155 @@
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
 
-@theme {
+:root {
+	color-scheme: light;
+	--background: #f8fafc;
+	--foreground: #0f172a;
+	--muted: #64748b;
+	--subtle: #94a3b8;
+	--card: #ffffff;
+	--card-muted: #f1f5f9;
+	--border: #e2e8f0;
+	--header: #ffffff;
+	--header-border: #a7f3d0;
+	--accent: #059669;
+	--accent-hover: #047857;
+	--accent-text: #059669;
+	--accent-muted: #ecfdf5;
+	--accent-subtle: #f0fdf4;
+	--warning-border: #fcd34d;
+	--warning-bg: #fffbeb;
+	--warning-text: #b45309;
+	--error-border: #fca5a5;
+	--error-bg: #fef2f2;
+	--error-text: #dc2626;
+	--admin: #d97706;
+	--highlight: #d97706;
+	--on-accent: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		color-scheme: dark;
+		--background: #020617;
+		--foreground: #f1f5f9;
+		--muted: #94a3b8;
+		--subtle: #64748b;
+		--card: #0f172a;
+		--card-muted: rgb(30 41 59 / 0.5);
+		--border: #1e293b;
+		--header: rgb(15 23 42 / 0.8);
+		--header-border: rgb(6 78 59 / 0.5);
+		--accent: #10b981;
+		--accent-hover: #059669;
+		--accent-text: #34d399;
+		--accent-muted: #064e3b;
+		--accent-subtle: rgb(2 44 34 / 0.2);
+		--warning-border: rgb(120 53 15 / 0.4);
+		--warning-bg: rgb(69 26 3 / 0.3);
+		--warning-text: #fcd34d;
+		--error-border: rgb(127 29 29 / 0.5);
+		--error-bg: rgb(69 10 10 / 0.5);
+		--error-text: #fca5a5;
+		--admin: #fbbf24;
+		--highlight: #fbbf24;
+		--on-accent: #ffffff;
+	}
+}
+
+@theme inline {
 	--font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+	--color-background: var(--background);
+	--color-foreground: var(--foreground);
+	--color-muted: var(--muted);
+	--color-subtle: var(--subtle);
+	--color-card: var(--card);
+	--color-card-muted: var(--card-muted);
+	--color-border: var(--border);
+	--color-header: var(--header);
+	--color-header-border: var(--header-border);
+	--color-accent: var(--accent);
+	--color-accent-hover: var(--accent-hover);
+	--color-accent-text: var(--accent-text);
+	--color-accent-muted: var(--accent-muted);
+	--color-accent-subtle: var(--accent-subtle);
+	--color-warning-border: var(--warning-border);
+	--color-warning-bg: var(--warning-bg);
+	--color-warning-text: var(--warning-text);
+	--color-error-border: var(--error-border);
+	--color-error-bg: var(--error-bg);
+	--color-error-text: var(--error-text);
+	--color-admin: var(--admin);
+	--color-highlight: var(--highlight);
+	--color-on-accent: var(--on-accent);
 }
 
 body {
-	@apply bg-slate-950 text-slate-100 antialiased;
+	@apply bg-background text-foreground antialiased;
+}
+
+@layer components {
+	.card {
+		@apply rounded-xl border border-border bg-card;
+	}
+
+	.input {
+		@apply rounded-lg border border-border bg-card text-foreground focus:border-accent focus:outline-none disabled:opacity-50;
+	}
+
+	.btn-primary {
+		@apply rounded-lg bg-accent font-medium text-on-accent transition hover:bg-accent-hover disabled:opacity-50;
+	}
+
+	.btn-ghost {
+		@apply rounded-lg border border-border font-medium text-muted transition hover:border-accent hover:text-accent-text disabled:opacity-50;
+	}
+
+	.btn-admin {
+		@apply rounded-lg border border-warning-border font-medium text-admin transition hover:bg-warning-bg disabled:opacity-50;
+	}
+
+	.list-row {
+		@apply rounded-lg bg-card-muted;
+	}
+
+	.alert-warning {
+		@apply rounded-lg border border-warning-border bg-warning-bg text-sm text-warning-text;
+	}
+
+	.alert-error {
+		@apply rounded-lg border border-error-border bg-error-bg text-sm text-error-text;
+	}
+
+	.alert-success {
+		@apply rounded-lg bg-accent-muted text-sm text-accent-text;
+	}
+
+	.link {
+		@apply text-accent-text hover:opacity-80;
+	}
+
+	.section-title {
+		@apply text-lg font-semibold text-accent-text;
+	}
+
+	.page-title {
+		@apply text-2xl font-bold text-foreground;
+	}
+
+	.page-desc {
+		@apply mt-1 text-sm text-muted;
+	}
+
+	.label {
+		@apply mb-1 block text-sm text-muted;
+	}
+
+	.chip-active {
+		@apply rounded-lg bg-accent px-3 py-1.5 text-xs text-on-accent transition;
+	}
+
+	.chip-inactive {
+		@apply rounded-lg bg-card-muted px-3 py-1.5 text-xs text-muted transition hover:bg-accent-muted hover:text-accent-text;
+	}
 }

@@ -70,21 +70,19 @@
 	}
 </script>
 
-<div class="flex min-h-screen items-center justify-center bg-slate-950 px-4">
-	<div class="absolute top-4 end-4">
+<div class="flex min-h-screen items-center justify-center bg-background px-4">
+	<div class="absolute end-4 top-4">
 		<LocaleSwitcher />
 	</div>
 
-	<div class="w-full max-w-md rounded-2xl border border-emerald-900/40 bg-slate-900 p-8 shadow-xl">
+	<div class="card w-full max-w-md border-header-border p-6 sm:p-8">
 		<div class="mb-8 text-center">
-			<h1 class="text-2xl font-bold text-emerald-400">{m.login_title()}</h1>
-			<p class="mt-2 text-sm text-slate-400">{m.login_subtitle()}</p>
+			<h1 class="text-2xl font-bold text-accent-text">{m.login_title()}</h1>
+			<p class="mt-2 text-sm text-muted">{m.login_subtitle()}</p>
 		</div>
 
 		{#if error}
-			<div class="mb-4 rounded-lg border border-red-900/50 bg-red-950/50 px-4 py-3 text-sm text-red-300">
-				{error}
-			</div>
+			<div class="alert-error mb-4 px-4 py-3">{error}</div>
 		{/if}
 
 		{#if step === 'phone'}
@@ -96,23 +94,19 @@
 				class="space-y-4"
 			>
 				<div>
-					<label for="phone" class="mb-1 block text-sm text-slate-300">{m.login_phone_label()}</label>
+					<label for="phone" class="label">{m.login_phone_label()}</label>
 					<input
 						id="phone"
 						type="tel"
 						bind:value={phoneInput}
 						placeholder={m.login_phone_placeholder()}
 						dir="ltr"
-						class="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 text-slate-100 placeholder:text-slate-500 focus:border-emerald-600 focus:outline-none"
+						class="input w-full px-4 py-3 placeholder:text-subtle"
 					/>
-					<p class="mt-1 text-xs text-slate-500">{m.login_phone_hint()}</p>
+					<p class="mt-1 text-xs text-subtle">{m.login_phone_hint()}</p>
 				</div>
 
-				<button
-					type="submit"
-					disabled={loading}
-					class="w-full rounded-lg bg-emerald-600 py-3 font-medium text-white transition hover:bg-emerald-500 disabled:opacity-50"
-				>
+				<button type="submit" disabled={loading} class="btn-primary w-full py-3">
 					{loading ? m.login_sending() : m.login_send_otp()}
 				</button>
 			</form>
@@ -124,12 +118,12 @@
 				}}
 				class="space-y-4"
 			>
-				<p class="text-center text-sm text-slate-400">
+				<p class="text-center text-sm text-muted">
 					{m.login_code_sent({ phone: phoneInput })}
 				</p>
 
 				<div>
-					<label for="otp" class="mb-1 block text-sm text-slate-300">{m.login_code_label()}</label>
+					<label for="otp" class="label">{m.login_code_label()}</label>
 					<input
 						id="otp"
 						type="text"
@@ -138,28 +132,24 @@
 						bind:value={otpCode}
 						placeholder="123456"
 						dir="ltr"
-						class="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 text-center text-2xl tracking-widest text-slate-100 focus:border-emerald-600 focus:outline-none"
+						class="input w-full px-4 py-3 text-center text-2xl tracking-widest"
 					/>
 				</div>
 
 				<button
 					type="submit"
 					disabled={loading || otpCode.length < 6}
-					class="w-full rounded-lg bg-emerald-600 py-3 font-medium text-white transition hover:bg-emerald-500 disabled:opacity-50"
+					class="btn-primary w-full py-3"
 				>
 					{loading ? m.login_verifying() : m.login_verify()}
 				</button>
 
-				<button
-					type="button"
-					onclick={handleBack}
-					class="w-full text-sm text-slate-400 hover:text-emerald-400"
-				>
+				<button type="button" onclick={handleBack} class="w-full text-sm text-muted hover:text-accent-text">
 					{m.login_change_phone()}
 				</button>
 			</form>
 		{/if}
 
-		<p class="mt-6 text-center text-xs text-slate-500">{m.login_disclaimer()}</p>
+		<p class="mt-6 text-center text-xs text-subtle">{m.login_disclaimer()}</p>
 	</div>
 </div>

@@ -46,11 +46,11 @@
 	}
 </script>
 
-<div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
-	<div class="mb-3 flex items-center justify-between text-xs text-slate-500">
+<div class="card p-4">
+	<div class="mb-3 flex items-center justify-between text-xs text-subtle">
 		<span>{kickoffAt.toLocaleString()}</span>
 		{#if locked}
-			<span class="text-amber-500">{m.match_locked()}</span>
+			<span class="text-warning-text">{m.match_locked()}</span>
 		{/if}
 	</div>
 
@@ -64,11 +64,11 @@
 				max="20"
 				bind:value={home}
 				disabled={locked}
-				class="ms-auto w-14 rounded-lg border border-slate-700 bg-slate-800 px-2 py-1 text-center disabled:opacity-50"
+				class="input ms-auto w-14 px-2 py-1 text-center"
 			/>
 		</div>
 
-		<span class="text-slate-600">–</span>
+		<span class="text-subtle">–</span>
 
 		<div class="flex flex-1 items-center gap-2">
 			<input
@@ -77,7 +77,7 @@
 				max="20"
 				bind:value={away}
 				disabled={locked}
-				class="w-14 rounded-lg border border-slate-700 bg-slate-800 px-2 py-1 text-center disabled:opacity-50"
+				class="input w-14 px-2 py-1 text-center"
 			/>
 			<span class="font-medium">{awayTeam?.code ?? 'TBD'}</span>
 			<span class="text-xl">{awayTeam?.flagEmoji ?? '⚽'}</span>
@@ -85,12 +85,12 @@
 	</div>
 
 	{#if isKnockout}
-		<p class="mt-2 text-xs text-slate-500">{m.match_knockout_no_draw()}</p>
+		<p class="mt-2 text-xs text-subtle">{m.match_knockout_no_draw()}</p>
 	{/if}
 
 	<div class="mt-3 flex items-center justify-between">
 		{#if message}
-			<span class="text-xs text-emerald-400">{message}</span>
+			<span class="text-xs text-accent-text">{message}</span>
 		{:else}
 			<span></span>
 		{/if}
@@ -98,7 +98,7 @@
 			type="button"
 			disabled={locked || saving}
 			onclick={handleSubmit}
-			class="rounded-lg bg-emerald-700 px-4 py-1.5 text-sm text-white hover:bg-emerald-600 disabled:opacity-50"
+			class="btn-primary px-4 py-1.5 text-sm"
 		>
 			{saving ? m.match_saving() : m.match_save()}
 		</button>

@@ -53,24 +53,22 @@
 
 <div class="space-y-6">
 	<div>
-		<h1 class="text-2xl font-bold text-white">{m.standings_title()}</h1>
-		<p class="mt-1 text-sm text-slate-400">{m.standings_intro()}</p>
+		<h1 class="page-title">{m.standings_title()}</h1>
+		<p class="page-desc">{m.standings_intro()}</p>
 	</div>
 
 	{#if data.extrasLocked}
-		<p class="rounded-lg border border-amber-900/40 bg-amber-950/30 px-4 py-3 text-sm text-amber-300">
-			{m.standings_locked()}
-		</p>
+		<p class="alert-warning px-4 py-3">{m.standings_locked()}</p>
 	{/if}
 
 	{#each data.groups ?? [] as group (group.id)}
-		<section class="rounded-xl border border-slate-800 bg-slate-900 p-6">
-			<h2 class="mb-4 text-lg font-semibold text-emerald-400">
+		<section class="card p-5 sm:p-6">
+			<h2 class="section-title mb-4">
 				{m.standings_group({ group: group.id })}
 			</h2>
 			<div class="space-y-3">
 				{#each group.teams as team (team.id)}
-					<div class="flex items-center justify-between rounded-lg bg-slate-800/50 px-4 py-3">
+					<div class="list-row flex items-center justify-between px-4 py-3">
 						<span>
 							{team.flagEmoji}
 							{team.name}
@@ -82,7 +80,7 @@
 								const val = e.currentTarget.value;
 								positions[group.id][team.id] = val ? Number(val) : null;
 							}}
-							class="rounded-lg border border-slate-700 bg-slate-800 px-3 py-1.5 text-sm disabled:opacity-50"
+							class="input px-3 py-1.5 text-sm"
 						>
 							<option value="">—</option>
 							{#each [1, 2, 3, 4] as pos (pos)}
@@ -100,12 +98,12 @@
 			type="button"
 			disabled={data.extrasLocked || saving}
 			onclick={handleSave}
-			class="rounded-lg bg-emerald-600 px-6 py-2 text-white hover:bg-emerald-500 disabled:opacity-50"
+			class="btn-primary px-6 py-2"
 		>
 			{saving ? m.standings_saving() : m.standings_save()}
 		</button>
 		{#if message}
-			<span class="text-sm text-emerald-400">{message}</span>
+			<span class="text-sm text-accent-text">{message}</span>
 		{/if}
 	</div>
 </div>
