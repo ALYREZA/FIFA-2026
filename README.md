@@ -52,20 +52,28 @@ pnpm install
 
 ### 2. Environment variables
 
-Copy `.env.example` to `.env` and fill in:
+**Local preview** (`pnpm preview`) reads secrets from **`.dev.vars`**, not `.env`:
+
+```sh
+cp .dev.vars.example .dev.vars
+```
+
+Set at least `ORIGIN` and `BETTER_AUTH_SECRET`. Use the exact preview URL (default `http://localhost:4173`, no trailing slash). If you use another port, update `ORIGIN` to match.
+
+**Drizzle / remote D1** — copy `.env.example` to `.env` for `CLOUDFLARE_*` only:
 
 ```sh
 cp .env.example .env
 ```
 
-| Variable              | Description                                             |
-| --------------------- | ------------------------------------------------------- |
-| `ORIGIN`              | App URL, e.g. `http://localhost:4173` for local preview |
-| `BETTER_AUTH_SECRET`  | 32+ character random secret                             |
-| `BALE_CLIENT_ID`      | Bale Safir client ID                                    |
-| `BALE_CLIENT_SECRET`  | Bale Safir client secret                                |
-| `ADMIN_PHONE_NUMBERS` | Admin phones (comma-separated, format `989XXXXXXXXX`)   |
-| `CLOUDFLARE_*`        | Required for remote `db:push` / `db:migrate` only       |
+| Variable              | Where        | Description                                             |
+| --------------------- | ------------ | ------------------------------------------------------- |
+| `ORIGIN`              | `.dev.vars`  | App URL, e.g. `http://localhost:4173` for local preview |
+| `BETTER_AUTH_SECRET`  | `.dev.vars`  | 32+ character random secret                             |
+| `BALE_CLIENT_ID`      | `.dev.vars`  | Bale Safir client ID                                    |
+| `BALE_CLIENT_SECRET`  | `.dev.vars`  | Bale Safir client secret                                |
+| `ADMIN_PHONE_NUMBERS` | `.dev.vars`  | Admin phones (comma-separated, format `989XXXXXXXXX`)   |
+| `CLOUDFLARE_*`        | `.env` only  | Required for remote `db:push` / `db:migrate` only       |
 
 ### 3. Initialize local database
 

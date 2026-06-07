@@ -1,0 +1,9 @@
+# Wrangler local preview secrets (copy to .dev.vars — used by pnpm preview / wrangler dev)
+# Must match the URL in your browser bar (no trailing slash).
+
+ORIGIN=http://localhost:4173
+BETTER_AUTH_SECRET=your-local-secret-at-least-32-characters-long
+BALE_CLIENT_ID=
+BALE_CLIENT_SECRET=
+TELEGRAM_BOT_TOKEN=
+ADMIN_PHONE_NUMBERS=
