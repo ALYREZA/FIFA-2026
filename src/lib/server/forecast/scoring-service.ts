@@ -7,6 +7,7 @@ import {
 	groupStandingPredictions,
 	matchPredictions,
 	matches,
+	podiumPredictions,
 	stages,
 	tournamentExtrasPredictions,
 	userScores
@@ -17,6 +18,8 @@ import {
 	scoreGroupStandings,
 	scoreMatchPrediction,
 	scoreTournamentExtras,
+	scorePodiumPrediction,
+	calculateEarlyPredictionBonus,
 	type ScoringRules
 } from './rules';
 import { getActiveTournament, getTournamentStages, parseScoringRules } from './tournament';
@@ -63,6 +66,19 @@ export async function scoreUserPredictions(db: Database, userId: string, tournam
 			match.awayTeamId,
 			rules
 		);
+
+		const earlyBonus = calculateEarlyPredictionBonus(
+			prediction.updatedAt,
+			match.kickoffAt,
+			tournament.lockMinutesBeforeKickoff,
+			breakdown.total,
+			rules.earlyPrediction.tiers
+		);
+
+		if (earlyBonus > 0) {
+			breakdown.earlyBonus = earlyBonus;
+			breakdown.total += earlyBonus;
+		}
 
 		matchPoints += breakdown.total;
 		if (isExactScore(breakdown)) exactScores++;
@@ -161,7 +177,41 @@ export async function scoreUserPredictions(db: Database, userId: string, tournam
 			.where(eq(tournamentExtrasPredictions.id, extras.id));
 	}
 
-	const totalPoints = matchPoints + standingPoints + extrasPoints;
+	const [podium] = await db
+		.select()
+		.from(podiumPredictions)
+		.where(
+			and(
+				eq(podiumPredictions.userId, userId),
+				eq(podiumPredictions.tournamentId, tournamentId)
+			)
+		)
+		.limit(1);
+
+	let podiumPoints = 0;
+	if (podium && actualExtras) {
+		const podiumBreakdown = scorePodiumPrediction(
+			{
+				firstPlaceTeamId: podium.firstPlaceTeamId,
+				secondPlaceTeamId: podium.secondPlaceTeamId,
+				thirdPlaceTeamId: podium.thirdPlaceTeamId
+			},
+			{
+				firstPlaceTeamId: actualExtras.championTeamId,
+				secondPlaceTeamId: actualExtras.runnerUpTeamId,
+				thirdPlaceTeamId: actualExtras.thirdPlaceTeamId
+			},
+			rules
+		);
+		podiumPoints = podiumBreakdown.total;
+
+		await db
+			.update(podiumPredictions)
+			.set({ pointsEarned: podiumBreakdown.total })
+			.where(eq(podiumPredictions.id, podium.id));
+	}
+
+	const totalPoints = matchPoints + standingPoints + extrasPoints + podiumPoints;
 	const now = new Date();
 
 	const [existing] = await db
@@ -178,6 +228,7 @@ export async function scoreUserPredictions(db: Database, userId: string, tournam
 				matchPoints,
 				standingPoints,
 				extrasPoints,
+				podiumPoints,
 				exactScores,
 				correctResults,
 				lastPredictionAt,
@@ -193,6 +244,7 @@ export async function scoreUserPredictions(db: Database, userId: string, tournam
 			matchPoints,
 			standingPoints,
 			extrasPoints,
+			podiumPoints,
 			exactScores,
 			correctResults,
 			lastPredictionAt,
@@ -218,10 +270,16 @@ export async function scoreAllUsers(db: Database, tournamentId: string) {
 		.from(tournamentExtrasPredictions)
 		.where(eq(tournamentExtrasPredictions.tournamentId, tournamentId));
 
+	const usersWithPodium = await db
+		.selectDistinct({ userId: podiumPredictions.userId })
+		.from(podiumPredictions)
+		.where(eq(podiumPredictions.tournamentId, tournamentId));
+
 	const userIds = new Set([
 		...usersWithPredictions.map((u) => u.userId),
 		...usersWithStandings.map((u) => u.userId),
-		...usersWithExtras.map((u) => u.userId)
+		...usersWithExtras.map((u) => u.userId),
+		...usersWithPodium.map((u) => u.userId)
 	]);
 
 	for (const userId of userIds) {

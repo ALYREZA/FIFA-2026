@@ -13,6 +13,7 @@
 		{ href: '/standings', label: m.nav_standings },
 		{ href: '/bracket', label: m.nav_bracket },
 		{ href: '/extras', label: m.nav_extras },
+		{ href: '/podium', label: m.nav_podium },
 		{ href: '/leaderboard', label: m.nav_leaderboard },
 		{ href: '/rules', label: m.nav_rules }
 	];

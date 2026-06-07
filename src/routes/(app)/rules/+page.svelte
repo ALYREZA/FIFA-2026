@@ -63,7 +63,70 @@
 				<p>{m.rules_points_top_scorer({ points: String(DEFAULT_SCORING_RULES.extras.topScorer) })}</p>
 				<p>{m.rules_points_dark_horse({ points: String(DEFAULT_SCORING_RULES.extras.darkHorse) })}</p>
 			</div>
+			<div>
+				<p class="font-medium text-foreground">{m.nav_podium()}</p>
+				<p>
+					{m.rules_points_podium_first({
+						points: String(DEFAULT_SCORING_RULES.podium.firstPlace)
+					})}
+				</p>
+				<p>
+					{m.rules_points_podium_second({
+						points: String(DEFAULT_SCORING_RULES.podium.secondPlace)
+					})}
+				</p>
+				<p>
+					{m.rules_points_podium_third({
+						points: String(DEFAULT_SCORING_RULES.podium.thirdPlace)
+					})}
+				</p>
+			</div>
 		</div>
+		<div class="mt-6 border-t border-border pt-4">
+			<p class="mb-2 font-medium text-foreground">{m.rules_points_early_title()}</p>
+			<p class="mb-3 text-sm text-muted">{m.rules_points_early_intro()}</p>
+			<ul class="space-y-1 text-sm text-muted">
+				{#each DEFAULT_SCORING_RULES.earlyPrediction.tiers as tier (tier.minHoursBeforeLock)}
+					<li>
+						{m.rules_points_early_tier({
+							hours: String(tier.minHoursBeforeLock),
+							bonus: String(tier.bonus)
+						})}
+					</li>
+				{/each}
+			</ul>
+			<ul class="mt-3 space-y-1 text-sm text-subtle">
+				<li>{m.rules_points_early_lock({ minutes: String(lockMinutes) })}</li>
+				<li>{m.rules_points_early_edit()}</li>
+			</ul>
+		</div>
+	</section>
+
+	<section class="card p-5 sm:p-6">
+		<h2 class="section-title mb-3">{m.rules_scoring_title()}</h2>
+		<p class="mb-4 text-sm text-muted">{m.rules_scoring_intro()}</p>
+		<ul class="list-disc space-y-2 ps-5 text-sm text-muted">
+			<li>{m.rules_scoring_match()}</li>
+			<li>{m.rules_scoring_admin()}</li>
+			<li>{m.rules_scoring_official()}</li>
+		</ul>
+	</section>
+
+	<section class="card p-5 sm:p-6">
+		<h2 class="section-title mb-3">{m.rules_podium_title()}</h2>
+		<p class="mb-4 text-sm text-muted">{m.rules_podium_intro()}</p>
+		<ul class="list-disc space-y-2 ps-5 text-sm text-muted">
+			<li>{m.rules_podium_immutable()}</li>
+			<li>
+				{m.rules_podium_decay({
+					max: String(COIN_RULES.podium.maxCost),
+					min: String(COIN_RULES.podium.minCost),
+					days: String(COIN_RULES.podium.opensDaysBeforeStart)
+				})}
+			</li>
+			<li>{m.rules_podium_vs_extras()}</li>
+			<li>{m.rules_podium_scoring()}</li>
+		</ul>
 	</section>
 
 	<section class="card p-5 sm:p-6">
@@ -74,18 +137,24 @@
 			<li>{m.rules_locking_knockout_draw()}</li>
 			<li>{m.rules_locking_bracket()}</li>
 			<li>{m.rules_locking_extras()}</li>
+			<li>{m.rules_locking_podium()}</li>
 		</ul>
 	</section>
 
 	<section class="card p-5 sm:p-6">
 		<h2 class="section-title mb-3">{m.rules_coins_title()}</h2>
-		<p class="mb-4 text-sm text-muted">{m.rules_coins_intro()}</p>
+		<p class="mb-4 text-sm text-muted">
+			{m.rules_coins_intro({ coins: String(COIN_RULES.startingBalance) })}
+		</p>
 
 		<div class="grid gap-6 lg:grid-cols-2">
 			<div>
 				<h3 class="mb-2 font-medium text-foreground">{m.rules_coins_starting()}</h3>
 				<p class="text-sm text-muted">
 					{m.rules_coins_starting_value({ coins: String(COIN_RULES.startingBalance) })}
+				</p>
+				<p class="mt-2 text-sm text-muted">
+					{m.rules_coins_minimum({ coins: String(COIN_RULES.minimumBalance) })}
 				</p>
 			</div>
 
@@ -98,6 +167,12 @@
 						{m.rules_coins_cost_standings({ coins: String(COIN_RULES.costs.groupStandings) })}
 					</li>
 					<li>{m.rules_coins_cost_extras({ coins: String(COIN_RULES.costs.tournamentExtras) })}</li>
+					<li>
+						{m.rules_coins_cost_podium({
+							max: String(COIN_RULES.podium.maxCost),
+							min: String(COIN_RULES.podium.minCost)
+						})}
+					</li>
 				</ul>
 			</div>
 

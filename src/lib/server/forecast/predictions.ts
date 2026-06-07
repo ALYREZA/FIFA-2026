@@ -5,6 +5,7 @@ import {
 	matches,
 	stages,
 	groupStandingPredictions,
+	podiumPredictions,
 	tournamentExtrasPredictions
 } from '$lib/server/db/forecast.schema';
 import type { BracketMatch } from './rules/bracket';
@@ -14,10 +15,17 @@ import {
 	validateGroupStandings,
 	validateTournamentExtras,
 	validateExtrasLock,
+	validatePodiumPrediction,
+	validatePodiumSubmission,
+	calculatePodiumCost,
+	getPodiumOpensAt,
+	getPodiumLocksAt,
 	type GroupStandingInput,
 	type TournamentExtrasInput,
-	type MatchPredictionInput
+	type MatchPredictionInput,
+	type PodiumPredictionInput
 } from './rules';
+import { deductCoins, ensureUserCoinBalance } from './coins';
 import {
 	getActiveTournament,
 	getCompletedStageOrders,
@@ -271,6 +279,79 @@ export async function getUserExtras(db: Database, userId: string, tournamentId: 
 		)
 		.limit(1);
 	return extras ?? null;
+}
+
+export async function getUserPodium(db: Database, userId: string, tournamentId: string) {
+	const [podium] = await db
+		.select()
+		.from(podiumPredictions)
+		.where(
+			and(
+				eq(podiumPredictions.userId, userId),
+				eq(podiumPredictions.tournamentId, tournamentId)
+			)
+		)
+		.limit(1);
+	return podium ?? null;
+}
+
+export async function submitPodiumPrediction(
+	db: Database,
+	userId: string,
+	input: PodiumPredictionInput
+) {
+	const tournament = await getActiveTournament(db);
+	if (!tournament) return { error: { code: 'no_tournament', message: 'No active tournament' } };
+
+	const now = new Date();
+	const opensAt = getPodiumOpensAt(tournament.startsAt);
+	const locksAt = getPodiumLocksAt(tournament.extrasLockedAt, tournament.startsAt);
+
+	const existing = await getUserPodium(db, userId, tournament.id);
+	const submissionError = validatePodiumSubmission(now, opensAt, locksAt, !!existing);
+	if (submissionError) return { error: submissionError };
+
+	const validationError = validatePodiumPrediction(input);
+	if (validationError) return { error: validationError };
+
+	const cost = calculatePodiumCost(now, opensAt, locksAt);
+	const coinResult = await deductCoins(db, userId, tournament.id, cost);
+	if ('error' in coinResult) return { error: coinResult.error };
+
+	await db.insert(podiumPredictions).values({
+		id: crypto.randomUUID(),
+		userId,
+		tournamentId: tournament.id,
+		firstPlaceTeamId: input.firstPlaceTeamId,
+		secondPlaceTeamId: input.secondPlaceTeamId,
+		thirdPlaceTeamId: input.thirdPlaceTeamId,
+		coinsSpent: cost,
+		lockedAt: now,
+		createdAt: now
+	});
+
+	return { success: true, coinsSpent: cost, coinBalance: coinResult.newBalance };
+}
+
+export async function getPodiumPricing(db: Database, userId: string, tournamentId: string) {
+	const tournament = await getActiveTournament(db);
+	if (!tournament) return null;
+
+	const now = new Date();
+	const opensAt = getPodiumOpensAt(tournament.startsAt);
+	const locksAt = getPodiumLocksAt(tournament.extrasLockedAt, tournament.startsAt);
+	const [podium, coinBalance] = await Promise.all([
+		getUserPodium(db, userId, tournamentId),
+		ensureUserCoinBalance(db, userId, tournamentId)
+	]);
+
+	return {
+		currentCost: calculatePodiumCost(now, opensAt, locksAt),
+		opensAt,
+		locksAt,
+		submitted: !!podium,
+		coinBalance
+	};
 }
 
 export async function getUserGroupStandings(db: Database, userId: string, tournamentId: string) {

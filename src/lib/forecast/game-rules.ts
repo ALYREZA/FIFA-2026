@@ -10,6 +10,11 @@ export const COIN_RULES = {
 		tournamentExtras: 100,
 		knockoutBracketEdit: 20
 	},
+	podium: {
+		maxCost: 200,
+		minCost: 40,
+		opensDaysBeforeStart: 180
+	},
 	lateWindowMultipliers: {
 		normal: 1,
 		lastCall: 2,
@@ -46,7 +51,8 @@ export const RESERVED_USERNAMES = new Set([
 	'rules',
 	'system',
 	'root',
-	'support'
+	'support',
+	'podium'
 ]);
 
 export { DEFAULT_SCORING_RULES };

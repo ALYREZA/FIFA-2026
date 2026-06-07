@@ -146,6 +146,38 @@ export const groupStandingPredictions = sqliteTable(
 	]
 );
 
+export const podiumPredictions = sqliteTable(
+	'podium_predictions',
+	{
+		id: text('id').primaryKey(),
+		userId: text('user_id')
+			.notNull()
+			.references(() => user.id, { onDelete: 'cascade' }),
+		tournamentId: text('tournament_id')
+			.notNull()
+			.references(() => tournaments.id, { onDelete: 'cascade' }),
+		firstPlaceTeamId: text('first_place_team_id')
+			.notNull()
+			.references(() => teams.id),
+		secondPlaceTeamId: text('second_place_team_id')
+			.notNull()
+			.references(() => teams.id),
+		thirdPlaceTeamId: text('third_place_team_id')
+			.notNull()
+			.references(() => teams.id),
+		coinsSpent: integer('coins_spent').notNull(),
+		pointsEarned: integer('points_earned').default(0),
+		lockedAt: integer('locked_at', { mode: 'timestamp_ms' }).notNull(),
+		createdAt: integer('created_at', { mode: 'timestamp_ms' })
+			.default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
+			.notNull()
+	},
+	(table) => [
+		unique('podium_user_tournament').on(table.userId, table.tournamentId),
+		index('podium_predictions_user_idx').on(table.userId)
+	]
+);
+
 export const tournamentExtrasPredictions = sqliteTable(
 	'tournament_extras_predictions',
 	{
@@ -186,6 +218,8 @@ export const userScores = sqliteTable(
 		matchPoints: integer('match_points').notNull().default(0),
 		standingPoints: integer('standing_points').notNull().default(0),
 		extrasPoints: integer('extras_points').notNull().default(0),
+		podiumPoints: integer('podium_points').notNull().default(0),
+		coinBalance: integer('coin_balance').notNull().default(1000),
 		exactScores: integer('exact_scores').notNull().default(0),
 		correctResults: integer('correct_results').notNull().default(0),
 		lastPredictionAt: integer('last_prediction_at', { mode: 'timestamp_ms' }),
@@ -229,6 +263,7 @@ export const actualTournamentExtras = sqliteTable('actual_tournament_extras', {
 		.unique(),
 	championTeamId: text('champion_team_id').references(() => teams.id),
 	runnerUpTeamId: text('runner_up_team_id').references(() => teams.id),
+	thirdPlaceTeamId: text('third_place_team_id').references(() => teams.id),
 	topScorerName: text('top_scorer_name'),
 	darkHorseTeamId: text('dark_horse_team_id').references(() => teams.id),
 	updatedAt: integer('updated_at', { mode: 'timestamp_ms' })

@@ -9,6 +9,7 @@
 	let positions = $state<Record<string, Record<string, number | null>>>({});
 	let championTeamId = $state('');
 	let runnerUpTeamId = $state('');
+	let thirdPlaceTeamId = $state('');
 	let topScorerName = $state('');
 	let darkHorseTeamId = $state('');
 	let message = $state('');
@@ -24,6 +25,7 @@
 		positions = initial;
 		championTeamId = data.extras?.championTeamId ?? '';
 		runnerUpTeamId = data.extras?.runnerUpTeamId ?? '';
+		thirdPlaceTeamId = data.extras?.thirdPlaceTeamId ?? '';
 		topScorerName = data.extras?.topScorerName ?? '';
 		darkHorseTeamId = data.extras?.darkHorseTeamId ?? '';
 	});
@@ -49,6 +51,7 @@
 		const form = new FormData();
 		form.set('championTeamId', championTeamId);
 		form.set('runnerUpTeamId', runnerUpTeamId);
+		form.set('thirdPlaceTeamId', thirdPlaceTeamId);
 		form.set('topScorerName', topScorerName);
 		form.set('darkHorseTeamId', darkHorseTeamId);
 		await fetch('?/saveExtras', { method: 'POST', body: form });
@@ -119,6 +122,15 @@
 			<div>
 				<label for="admin-runner-up" class="label">{m.extras_runner_up()}</label>
 				<select id="admin-runner-up" bind:value={runnerUpTeamId} class="input w-full py-2">
+					<option value="">{m.extras_select_team()}</option>
+					{#each data.groups?.flatMap((g) => g.teams) ?? [] as team (team.id)}
+						<option value={team.id}>{team.code} · {team.name}</option>
+					{/each}
+				</select>
+			</div>
+			<div>
+				<label for="admin-third-place" class="label">{m.podium_third()}</label>
+				<select id="admin-third-place" bind:value={thirdPlaceTeamId} class="input w-full py-2">
 					<option value="">{m.extras_select_team()}</option>
 					{#each data.groups?.flatMap((g) => g.teams) ?? [] as team (team.id)}
 						<option value={team.id}>{team.code} · {team.name}</option>

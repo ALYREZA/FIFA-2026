@@ -2,6 +2,7 @@ import { fail } from '@sveltejs/kit';
 import { getDb } from '$lib/server/db';
 import { seedTournamentIfNeeded } from '$lib/server/forecast/seed';
 import { submitMatchPrediction, getUserPredictionsMap } from '$lib/server/forecast/predictions';
+import { scoreUserPredictions } from '$lib/server/forecast/scoring-service';
 import {
 	getActiveTournament,
 	getCompletedStageOrders,
@@ -85,6 +86,11 @@ export const actions: Actions = {
 
 		if (result.error) {
 			return fail(400, { error: result.error.message });
+		}
+
+		const tournament = await getActiveTournament(db);
+		if (tournament) {
+			await scoreUserPredictions(db, locals.user!.id, tournament.id);
 		}
 
 		return { success: true };

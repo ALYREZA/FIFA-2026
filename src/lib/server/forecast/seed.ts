@@ -4,6 +4,7 @@ import {
 	groupStandingPredictions,
 	matchPredictions,
 	matches,
+	podiumPredictions,
 	stages,
 	teams,
 	tournamentExtrasPredictions,
@@ -59,6 +60,7 @@ async function seedFullTournament(db: Database, force: boolean) {
 	if (force) {
 		await db.delete(matchPredictions);
 		await db.delete(groupStandingPredictions);
+		await db.delete(podiumPredictions);
 		await db.delete(tournamentExtrasPredictions);
 		await db.delete(userScores);
 		await db.delete(matches);

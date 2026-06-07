@@ -5,6 +5,7 @@ import { userScores } from '$lib/server/db/forecast.schema';
 import {
 	getUserExtras,
 	getUserGroupStandings,
+	getUserPodium,
 	getUserPredictionsMap
 } from '$lib/server/forecast/predictions';
 import { resolveBracketTeams, type BracketMatch } from '$lib/server/forecast/rules/bracket';
@@ -29,24 +30,27 @@ export async function getPublicUserProfile(db: Database, username: string) {
 			matches: [],
 			groups: [],
 			extras: null,
+			podium: null,
 			bracket: []
 		};
 	}
 
 	const userId = profileUser.id;
-	const [teams, stages, matches, predictions, standings, extras, scoreRows] = await Promise.all([
-		getTournamentTeams(db, tournament.id),
-		getTournamentStages(db, tournament.id),
-		getTournamentMatches(db, tournament.id),
-		getUserPredictionsMap(db, userId, tournament.id),
-		getUserGroupStandings(db, userId, tournament.id),
-		getUserExtras(db, userId, tournament.id),
-		db
-			.select()
-			.from(userScores)
-			.where(and(eq(userScores.userId, userId), eq(userScores.tournamentId, tournament.id)))
-			.limit(1)
-	]);
+	const [teams, stages, matches, predictions, standings, extras, podium, scoreRows] =
+		await Promise.all([
+			getTournamentTeams(db, tournament.id),
+			getTournamentStages(db, tournament.id),
+			getTournamentMatches(db, tournament.id),
+			getUserPredictionsMap(db, userId, tournament.id),
+			getUserGroupStandings(db, userId, tournament.id),
+			getUserExtras(db, userId, tournament.id),
+			getUserPodium(db, userId, tournament.id),
+			db
+				.select()
+				.from(userScores)
+				.where(and(eq(userScores.userId, userId), eq(userScores.tournamentId, tournament.id)))
+				.limit(1)
+		]);
 
 	const teamMap = Object.fromEntries(teams.map((t) => [t.id, t]));
 	const stageMap = Object.fromEntries(stages.map((s) => [s.id, s]));
@@ -58,6 +62,15 @@ export async function getPublicUserProfile(db: Database, username: string) {
 				runnerUp: extras.runnerUpTeamId ? teamMap[extras.runnerUpTeamId] : null,
 				topScorerName: extras.topScorerName,
 				darkHorse: extras.darkHorseTeamId ? teamMap[extras.darkHorseTeamId] : null
+			}
+		: null;
+
+	const podiumDisplay = podium
+		? {
+				first: teamMap[podium.firstPlaceTeamId] ?? null,
+				second: teamMap[podium.secondPlaceTeamId] ?? null,
+				third: teamMap[podium.thirdPlaceTeamId] ?? null,
+				coinsSpent: podium.coinsSpent
 			}
 		: null;
 
@@ -132,6 +145,7 @@ export async function getPublicUserProfile(db: Database, username: string) {
 		matches: matchPredictions,
 		groups,
 		extras: extrasDisplay,
+		podium: podiumDisplay,
 		bracket
 	};
 }

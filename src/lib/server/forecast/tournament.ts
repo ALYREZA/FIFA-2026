@@ -10,7 +10,18 @@ export async function getActiveTournament(db: Database) {
 
 export function parseScoringRules(json: unknown): ScoringRules {
 	if (!json || typeof json !== 'object') return DEFAULT_SCORING_RULES;
-	return { ...DEFAULT_SCORING_RULES, ...(json as ScoringRules) };
+
+	const parsed = json as Partial<ScoringRules>;
+	return {
+		...DEFAULT_SCORING_RULES,
+		...parsed,
+		group: { ...DEFAULT_SCORING_RULES.group, ...parsed.group },
+		knockout: { ...DEFAULT_SCORING_RULES.knockout, ...parsed.knockout },
+		standings: { ...DEFAULT_SCORING_RULES.standings, ...parsed.standings },
+		extras: { ...DEFAULT_SCORING_RULES.extras, ...parsed.extras },
+		podium: { ...DEFAULT_SCORING_RULES.podium, ...parsed.podium },
+		earlyPrediction: parsed.earlyPrediction ?? DEFAULT_SCORING_RULES.earlyPrediction
+	};
 }
 
 export async function getTournamentTeams(db: Database, tournamentId: string) {

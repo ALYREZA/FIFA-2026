@@ -72,6 +72,7 @@ export const actions: Actions = {
 		const result = await saveActualTournamentExtras(db, {
 			championTeamId: form.get('championTeamId')?.toString() || null,
 			runnerUpTeamId: form.get('runnerUpTeamId')?.toString() || null,
+			thirdPlaceTeamId: form.get('thirdPlaceTeamId')?.toString() || null,
 			topScorerName: form.get('topScorerName')?.toString() || null,
 			darkHorseTeamId: form.get('darkHorseTeamId')?.toString() || null
 		});

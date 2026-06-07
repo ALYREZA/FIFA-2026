@@ -84,6 +84,7 @@ export async function saveActualTournamentExtras(
 	extras: {
 		championTeamId: string | null;
 		runnerUpTeamId: string | null;
+		thirdPlaceTeamId: string | null;
 		topScorerName: string | null;
 		darkHorseTeamId: string | null;
 	}

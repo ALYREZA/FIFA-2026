@@ -1,6 +1,6 @@
 # FIFA 2026 Forecast
 
-A skill-based prediction game for the FIFA World Cup 2026. Users sign in with **Bale OTP**, pick a public **username**, predict match results, group standings, knockout brackets, and tournament extras, then compete on a points leaderboard.
+A skill-based prediction game for the FIFA World Cup 2026. Users sign in with **Bale OTP**, pick a public **username**, predict match results, group standings, knockout brackets, tournament extras, and a permanent **podium** pick (top 3 teams), then compete on a points leaderboard.
 
 This is **not** a betting app — no stakes, odds, real-money wallets, or cash prizes.
 
@@ -14,9 +14,11 @@ This is **not** a betting app — no stakes, odds, real-money wallets, or cash p
   - Final group table positions (1–4)
   - Knockout bracket (with consistency validation)
   - Tournament extras (champion, runner-up, top scorer, dark horse)
-- **Rules engine** — locking windows, progressive stage unlocks, bracket consistency, tiered scoring
-- **Game rules page** — points, virtual coins, locking, and public profiles explained in-app
+  - Podium (top 3 teams — permanent pick, coin cost decays over time)
+- **Rules engine** — locking windows, progressive stage unlocks, bracket consistency, tiered scoring, early-prediction bonuses
+- **Game rules page** — points, early bonuses, virtual coins, locking, scoring updates, and public profiles explained in-app
 - **Leaderboard** — points, exact scores, earliest submission tiebreaker; click `@username` to view predictions
+- **Score recalculation** — saving or editing a match prediction updates your score; admin result entry rescored all users
 - **Public profiles** — `/u/[username]` shows another player's predictions (read-only)
 - **Admin panel** — enter match results, official standings/extras, rescore all users
 - **i18n** — Persian (`fa`) and English (`en`), with locale switcher
@@ -71,7 +73,7 @@ cp .env.example .env
 pnpm db:local
 ```
 
-Applies SQL migrations (`0001`–`0003`, including the `username` column) to the local D1 instance in `wrangler.jsonc`.
+Applies SQL migrations (`0001`–`0004`, including `username` and `podium_predictions`) to the local D1 instance in `wrangler.jsonc`.
 
 ### 4. Run the app
 
@@ -113,6 +115,7 @@ On first sign-in, choose a username after OTP verification. On first visit to th
 | `/standings` | Group table position picks |
 | `/bracket` | Knockout bracket view |
 | `/extras` | Champion, top scorer, etc. |
+| `/podium` | Top 3 teams (permanent pick, coin cost decays before lock) |
 | `/leaderboard` | Rankings (links to public profiles) |
 | `/rules` | Full game rules (points, coins, locking, profiles) |
 | `/u/[username]` | Public read-only prediction profile |
@@ -124,6 +127,18 @@ Persian UI: switch locale via **فارسی** in the header (URLs use `/fa/...`).
 ## Scoring & coins
 
 **Points** drive the leaderboard. See `/rules` in the app for the full breakdown, or `src/lib/forecast/scoring-rules.ts` for point values.
+
+### How scoring works
+
+1. **Users** submit predictions (match scores, standings, extras, podium).
+2. **Admins** enter official results (match scores, final group positions, tournament extras).
+3. The app compares predictions to official data and writes totals to `user_scores`.
+4. **Saving or editing a match prediction** recalculates that user's score immediately (including early bonuses for finished matches).
+5. **Admin saving official results** triggers a full rescore for all users.
+
+Predictions never become official results — only admin entries do.
+
+### Point values
 
 | Category | Points |
 |----------|--------|
@@ -138,8 +153,62 @@ Persian UI: switch locale via **فارسی** in the header (URLs use `/fa/...`).
 | Extras — runner-up | 5 |
 | Extras — top scorer | 8 |
 | Extras — dark horse | 6 |
+| Podium — 1st place | 15 |
+| Podium — 2nd place | 10 |
+| Podium — 3rd place | 8 |
 
-**Coins** are a virtual budget (starting balance 1000) documented on `/rules`. Coin spending/earn-back is planned gamification — not real money.
+### Early prediction bonus
+
+Correct **match** predictions earn extra points when saved well before lock. Bonus tiers (added on top of base match points):
+
+| Hours before lock | Bonus |
+|-------------------|-------|
+| 48+ | +3 |
+| 24+ | +2 |
+| 6+ | +1 |
+
+- **Lock** = kickoff minus 15 minutes (same as the prediction deadline).
+- Bonus uses your **last save time** — editing closer to kickoff reduces or removes the bonus.
+- Bonus only applies when the prediction earned base match points (correct result or better).
+- Your score is **recalculated** on every save and when admin enters results.
+
+### Locking windows
+
+| Prediction type | Opens | Locks |
+|-----------------|-------|-------|
+| Group matches | Immediately | 15 min before kickoff |
+| Knockout matches | After previous round is fully finished (admin) | 15 min before kickoff |
+| Group standings | Immediately | Tournament start |
+| Tournament extras | Immediately | Tournament start |
+| Podium | ~180 days before tournament | Permanently on submit; closed at tournament start |
+
+Match predictions can be **edited freely until lock**. After lock, during the match, or after the final whistle — no changes.
+
+### Podium prediction
+
+A separate prediction at `/podium` where users pick the **top 3 teams** (champion, runner-up, third place). Key differences from tournament extras:
+
+| | Podium | Tournament extras |
+|---|--------|-------------------|
+| Positions | 1st, 2nd, 3rd only | Champion, runner-up, top scorer, dark horse |
+| Editable? | **No** — locked forever on submit | Yes, until tournament start |
+| Coin cost? | **Yes** — decays over time | Documented; not enforced yet |
+| Points | 15 / 10 / 8 per correct position | 10 / 5 / 8 / 6 |
+
+**Coin cost decay** (linear between open and lock):
+
+- Opens **180 days** before tournament start
+- Starts at **200 coins**, decreases to **40 coins** at lock
+- Current price is shown on the page before you confirm
+- You must keep at least **100 coins** in reserve after spending
+
+**Coins** are a virtual budget (starting balance **1000**) — not real money. Podium submission deducts coins today; other coin costs (matches, standings, extras) are documented on `/rules` for future gamification. Leaderboard rank is based on **points only**, not coin balance.
+
+### Leaderboard tiebreakers
+
+1. Total points (highest wins)
+2. Exact scores count (highest wins)
+3. Earliest last prediction time (earlier wins)
 
 ## Admin
 
@@ -147,11 +216,15 @@ Persian UI: switch locale via **فارسی** in the header (URLs use `/fa/...`).
 2. Log in with that phone and set a username.
 3. Open **Admin** in the nav.
 
-**Match results** — set scores and status; saving auto-rescores all users.
+**Match results** — set scores and status (`finished` required for points); saving auto-rescores all users.
 
-**Official results** — set final group positions and tournament extras (champion, etc.).
+**Official results** — set final group positions and tournament extras (champion, runner-up, **third place**, top scorer, dark horse). Third place is used to score podium predictions.
+
+**Rescore all** — manually recalculate every user's points without changing results.
 
 **Reseed tournament** — wipes predictions and reloads the full 48-team schedule. Use with care.
+
+> Enter results **after each matchday**, not for future matches. Marking a future match `finished` early locks predictions and scores users prematurely.
 
 ## Project structure
 
@@ -159,7 +232,7 @@ Persian UI: switch locale via **فارسی** in the header (URLs use `/fa/...`).
 src/
 ├── lib/
 │   ├── auth-client.ts          # better-auth client
-│   ├── forecast/               # scoring rules, game rules (coins)
+│   ├── forecast/               # scoring rules, game rules (coins, podium)
 │   ├── components/             # UI components
 │   └── server/
 │       ├── auth.ts             # Bale OTP + better-auth
@@ -170,6 +243,7 @@ src/
 │           ├── data/           # 48 teams, bracket tree
 │           ├── rules/          # Validation & scoring engine
 │           ├── seed.ts         # Tournament seed
+│           ├── coins.ts            # Coin balance & deduction
 │           ├── public-profile.ts
 │           └── admin-service.ts
 ├── routes/
@@ -179,7 +253,7 @@ scripts/
 └── wrangler.mjs                # Wrangler wrapper (loads wrangler.jsonc)
 .github/workflows/
 └── ci.yml                        # GitHub Actions: check, lint, deploy
-migrations/                     # D1 SQL migrations
+migrations/                     # D1 SQL migrations (0004 = podium + coin balance)
 messages/                       # Paraglide i18n (en.json, fa.json, …)
 wrangler.jsonc                  # Worker config, D1, module aliases
 ```

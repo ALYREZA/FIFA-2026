@@ -5,5 +5,7 @@ export * from './knockout';
 export * from './bracket';
 export * from './standings';
 export * from './extras';
+export * from './podium';
 export * from './scoring';
+export * from './early-prediction';
 export * from './validate';

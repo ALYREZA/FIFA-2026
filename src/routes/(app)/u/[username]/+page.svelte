@@ -104,6 +104,26 @@
 		</section>
 	{/if}
 
+	{#if data.podium}
+		<section class="card p-5 sm:p-6">
+			<h2 class="section-title mb-4">{m.profile_podium()}</h2>
+			<dl class="grid gap-3 text-sm sm:grid-cols-3">
+				<div>
+					<dt class="text-muted">{m.podium_first()}</dt>
+					<dd class="font-medium text-foreground">{data.podium.first?.code ?? '—'}</dd>
+				</div>
+				<div>
+					<dt class="text-muted">{m.podium_second()}</dt>
+					<dd class="font-medium text-foreground">{data.podium.second?.code ?? '—'}</dd>
+				</div>
+				<div>
+					<dt class="text-muted">{m.podium_third()}</dt>
+					<dd class="font-medium text-foreground">{data.podium.third?.code ?? '—'}</dd>
+				</div>
+			</dl>
+		</section>
+	{/if}
+
 	{#if data.extras}
 		<section class="card p-5 sm:p-6">
 			<h2 class="section-title mb-4">{m.profile_extras()}</h2>

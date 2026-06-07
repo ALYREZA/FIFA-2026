@@ -9,12 +9,16 @@ export type ScoreBreakdown = {
 	correctResult?: number;
 	correctGoalDiff?: number;
 	correctWinner?: number;
+	earlyBonus?: number;
 	positionExact?: number;
 	positionOffByOne?: number;
 	champion?: number;
 	runnerUp?: number;
 	topScorer?: number;
 	darkHorse?: number;
+	podiumFirst?: number;
+	podiumSecond?: number;
+	podiumThird?: number;
 	total: number;
 };
 
@@ -70,6 +74,7 @@ export type TournamentExtrasInput = {
 export type TournamentExtrasResult = {
 	championTeamId: string | null;
 	runnerUpTeamId: string | null;
+	thirdPlaceTeamId?: string | null;
 	topScorerName: string | null;
 	darkHorseTeamId: string | null;
 };
