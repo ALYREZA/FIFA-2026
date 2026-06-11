@@ -20,8 +20,8 @@
 		"db:migrate": "drizzle-kit migrate",
 		"db:studio": "drizzle-kit studio",
 		"auth:schema": "better-auth generate --config src/lib/server/auth.ts --output src/lib/server/db/auth.schema.ts --yes",
-		"db:local": "node scripts/wrangler.mjs d1 execute fifa-2026 --local --file=migrations/0001_initial.sql && node scripts/wrangler.mjs d1 execute fifa-2026 --local --file=migrations/0002_admin_results.sql && node scripts/wrangler.mjs d1 execute fifa-2026 --local --file=migrations/0003_username.sql && node scripts/wrangler.mjs d1 execute fifa-2026 --local --file=migrations/0004_podium_predictions.sql",
-		"db:remote": "node scripts/wrangler.mjs d1 execute fifa-2026 --remote --file=migrations/0001_initial.sql && node scripts/wrangler.mjs d1 execute fifa-2026 --remote --file=migrations/0002_admin_results.sql && node scripts/wrangler.mjs d1 execute fifa-2026 --remote --file=migrations/0003_username.sql && node scripts/wrangler.mjs d1 execute fifa-2026 --remote --file=migrations/0004_podium_predictions.sql",
+		"db:local": "node scripts/wrangler.mjs d1 execute fifa-2026 --local --file=migrations/0001_initial.sql && node scripts/wrangler.mjs d1 execute fifa-2026 --local --file=migrations/0002_admin_results.sql && node scripts/wrangler.mjs d1 execute fifa-2026 --local --file=migrations/0003_username.sql && node scripts/wrangler.mjs d1 execute fifa-2026 --local --file=migrations/0004_podium_predictions.sql && node scripts/wrangler.mjs d1 execute fifa-2026 --local --file=migrations/0005_match_stadium.sql",
+		"db:remote": "node scripts/wrangler.mjs d1 execute fifa-2026 --remote --file=migrations/0001_initial.sql && node scripts/wrangler.mjs d1 execute fifa-2026 --remote --file=migrations/0002_admin_results.sql && node scripts/wrangler.mjs d1 execute fifa-2026 --remote --file=migrations/0003_username.sql && node scripts/wrangler.mjs d1 execute fifa-2026 --remote --file=migrations/0004_podium_predictions.sql && node scripts/wrangler.mjs d1 execute fifa-2026 --remote --file=migrations/0005_match_stadium.sql",
 		"deploy": "pnpm build && node scripts/wrangler.mjs deploy"
 	},
 	"dependencies": {
