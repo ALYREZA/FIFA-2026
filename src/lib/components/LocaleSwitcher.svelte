@@ -1,8 +1,5 @@
 <script lang="ts">
-	import type { Pathname } from '$app/types';
-	import { page } from '$app/state';
-	import { resolve } from '$app/paths';
-	import { getLocale, locales, localizeHref } from '$lib/paraglide/runtime';
+	import { getLocale, locales, setLocale } from '$lib/paraglide/runtime';
 	import * as m from '$lib/paraglide/messages';
 
 	const localeLabels: Record<string, () => string> = {
@@ -13,8 +10,8 @@
 	type AppLocale = (typeof locales)[number];
 
 	function handleLocaleChange(locale: AppLocale) {
-		const href = localizeHref(page.url.pathname, { locale });
-		window.location.href = resolve(href as Pathname);
+		if (getLocale() === locale) return;
+		setLocale(locale);
 	}
 </script>
 

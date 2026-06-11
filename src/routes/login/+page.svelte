@@ -140,11 +140,14 @@
 	}
 </script>
 
-<div class="safe-area-x flex min-h-screen items-center justify-center bg-background">
-	<div class="safe-area-top absolute end-4">
+<div
+	class="safe-area-top safe-area-bottom safe-area-x flex min-h-dvh flex-col bg-background text-foreground"
+>
+	<header class="flex shrink-0 items-center justify-end py-3">
 		<LocaleSwitcher />
-	</div>
+	</header>
 
+	<main class="flex flex-1 items-center justify-center px-4 pb-8">
 	<div class="card w-full max-w-md border-header-border p-6 sm:p-8">
 		<div class="mb-8 text-center">
 			<h1 class="text-2xl font-bold text-accent-text">{m.login_title()}</h1>
@@ -274,4 +277,5 @@
 
 		<p class="mt-6 text-center text-xs text-subtle">{m.login_disclaimer()}</p>
 	</div>
+	</main>
 </div>

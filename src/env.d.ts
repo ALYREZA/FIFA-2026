@@ -14,4 +14,4 @@ declare namespace Cloudflare {
 	}
 }
 
-export {};
+export { };
