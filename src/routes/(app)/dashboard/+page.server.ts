@@ -7,6 +7,7 @@ import {
 	getTournamentTeams
 } from '$lib/server/forecast/tournament';
 import { getUserMatchPredictions } from '$lib/server/forecast/predictions';
+import { attachStadium } from '$lib/server/forecast/stadiums';
 import { userScores } from '$lib/server/db/forecast.schema';
 import { and, eq } from 'drizzle-orm';
 import type { PageServerLoad } from './$types';
@@ -44,11 +45,13 @@ export const load: PageServerLoad = async ({ locals, platform }) => {
 		myScore: myScore ?? null,
 		predictionCount: predictions.length,
 		totalMatches: matches.length,
-		upcoming: upcoming.map((m) => ({
-			...m,
-			homeTeam: m.homeTeamId ? teamMap[m.homeTeamId] : null,
-			awayTeam: m.awayTeamId ? teamMap[m.awayTeamId] : null
-		})),
+		upcoming: upcoming.map((m) =>
+			attachStadium({
+				...m,
+				homeTeam: m.homeTeamId ? teamMap[m.homeTeamId] : null,
+				awayTeam: m.awayTeamId ? teamMap[m.awayTeamId] : null
+			})
+		),
 		leaderboard
 	};
 };

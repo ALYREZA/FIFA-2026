@@ -5,6 +5,7 @@ import { matches, stages, teams } from '$lib/server/db/forecast.schema';
 import { triggerRescoreAll, updateMatchResult } from '$lib/server/forecast/admin-service';
 import { reseedTournament, seedTournamentIfNeeded } from '$lib/server/forecast/seed';
 import { getActiveTournament } from '$lib/server/forecast/tournament';
+import { attachStadium } from '$lib/server/forecast/stadiums';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ platform, url }) => {
@@ -33,12 +34,14 @@ export const load: PageServerLoad = async ({ platform, url }) => {
 		stageFilter,
 		matches: filtered
 			.sort((a, b) => a.kickoffAt.getTime() - b.kickoffAt.getTime())
-			.map((m) => ({
-				...m,
-				stage: stageMap[m.stageId],
-				homeTeam: m.homeTeamId ? teamMap[m.homeTeamId] : null,
-				awayTeam: m.awayTeamId ? teamMap[m.awayTeamId] : null
-			}))
+			.map((m) =>
+				attachStadium({
+					...m,
+					stage: stageMap[m.stageId],
+					homeTeam: m.homeTeamId ? teamMap[m.homeTeamId] : null,
+					awayTeam: m.awayTeamId ? teamMap[m.awayTeamId] : null
+				})
+			)
 	};
 };
 

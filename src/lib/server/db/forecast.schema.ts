@@ -62,6 +62,7 @@ export const matches = sqliteTable(
 		homeTeamId: text('home_team_id').references(() => teams.id),
 		awayTeamId: text('away_team_id').references(() => teams.id),
 		groupId: text('group_id'),
+		stadiumId: text('stadium_id'),
 		kickoffAt: integer('kickoff_at', { mode: 'timestamp_ms' }).notNull(),
 		status: text('status').$type<MatchStatus>().notNull().default('scheduled'),
 		homeScore: integer('home_score'),

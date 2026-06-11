@@ -11,6 +11,7 @@ import {
 	getTournamentTeams
 } from '$lib/server/forecast/tournament';
 import { isMatchLocked, getPredictionLockTime } from '$lib/server/forecast/rules';
+import { attachStadium } from '$lib/server/forecast/stadiums';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals, platform }) => {
@@ -46,7 +47,7 @@ export const load: PageServerLoad = async ({ locals, platform }) => {
 			lockMinutesBeforeKickoff: tournament.lockMinutesBeforeKickoff
 		};
 
-		return {
+		return attachStadium({
 			...match,
 			stage,
 			homeTeam: match.homeTeamId ? teamMap[match.homeTeamId] : null,
@@ -56,7 +57,7 @@ export const load: PageServerLoad = async ({ locals, platform }) => {
 			lockAt: getPredictionLockTime(matchCtx),
 			stageUnlocked:
 				stage.unlockAfterOrder === null || completedOrders.includes(stage.unlockAfterOrder)
-		};
+		});
 	});
 
 	return {

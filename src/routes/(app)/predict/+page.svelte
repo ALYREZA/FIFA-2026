@@ -42,6 +42,7 @@
 									matchId={match.id}
 									homeTeam={match.homeTeam}
 									awayTeam={match.awayTeam}
+									stadium={match.stadium}
 									homeScore={match.prediction?.homeScore ?? 0}
 									awayScore={match.prediction?.awayScore ?? 0}
 									locked={match.locked || !match.stageUnlocked}

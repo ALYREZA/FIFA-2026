@@ -16,7 +16,7 @@ import { FIFA_2026_TEAMS } from './data/teams';
 import { DEFAULT_SCORING_RULES } from './rules';
 
 export const TOURNAMENT_ID = 'fifa-2026';
-export const SEED_VERSION = 3;
+export const SEED_VERSION = 4;
 
 const TOURNAMENT_START = new Date(FIFA_2026_MATCHES[0].kickoffAt);
 const EXTRAS_LOCK = TOURNAMENT_START;
@@ -125,6 +125,7 @@ async function seedFullTournament(db: Database, force: boolean) {
 			homeTeamId: match.homeTeamId,
 			awayTeamId: match.awayTeamId,
 			groupId: match.groupId,
+			stadiumId: match.stadiumId,
 			kickoffAt: new Date(match.kickoffAt),
 			status: 'scheduled',
 			bracketSlot: match.bracketSlot ?? null,

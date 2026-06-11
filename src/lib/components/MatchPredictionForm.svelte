@@ -1,6 +1,8 @@
 <script lang="ts">
 	import CountryFlag from '$lib/components/CountryFlag.svelte';
 	import { formatKickoffAt } from '$lib/format-datetime';
+	import { formatStadiumLabel, type StadiumDisplay } from '$lib/format-stadium';
+	import { getLocale } from '$lib/paraglide/runtime';
 	import * as m from '$lib/paraglide/messages';
 
 	type Team = { id: string; name: string; code: string; flagEmoji: string | null } | null;
@@ -9,6 +11,7 @@
 		matchId,
 		homeTeam,
 		awayTeam,
+		stadium = null,
 		homeScore = 0,
 		awayScore = 0,
 		locked = false,
@@ -19,6 +22,7 @@
 		matchId: string;
 		homeTeam: Team;
 		awayTeam: Team;
+		stadium?: StadiumDisplay | null;
 		homeScore?: number;
 		awayScore?: number;
 		locked?: boolean;
@@ -26,6 +30,8 @@
 		kickoffAt: Date | string | number;
 		onSubmit: (matchId: string, home: number, away: number) => Promise<void>;
 	} = $props();
+
+	let stadiumLabel = $derived(stadium ? formatStadiumLabel(stadium, getLocale()) : null);
 
 	let home = $state(0);
 	let away = $state(0);
@@ -50,7 +56,12 @@
 
 <div class="card p-4">
 	<div class="mb-3 flex flex-wrap items-center justify-between gap-2 text-xs text-subtle">
-		<span>{formatKickoffAt(kickoffAt)}</span>
+		<div class="min-w-0 space-y-0.5">
+			<span class="block">{formatKickoffAt(kickoffAt)}</span>
+			{#if stadiumLabel}
+				<span class="block truncate text-muted">{stadiumLabel}</span>
+			{/if}
+		</div>
 		{#if locked}
 			<span class="text-warning-text">{m.match_locked()}</span>
 		{/if}

@@ -3,6 +3,8 @@
 	import { resolve } from '$app/paths';
 	import CountryFlag from '$lib/components/CountryFlag.svelte';
 	import MatchCountdown from '$lib/components/MatchCountdown.svelte';
+	import { formatStadiumLabel } from '$lib/format-stadium';
+	import { getLocale } from '$lib/paraglide/runtime';
 	import * as m from '$lib/paraglide/messages';
 
 	let { data } = $props();
@@ -57,13 +59,20 @@
 					<ul class="space-y-3">
 						{#each data.upcoming as match (match.id)}
 							<li class="list-row flex flex-wrap items-center justify-between gap-2 px-4 py-3">
-								<span class="flex min-w-0 items-center gap-1.5 text-sm">
-									<CountryFlag teamId={match.homeTeam?.id} />
-									{match.homeTeam?.code ?? 'TBD'}
-									<span class="text-subtle">{m.vs()}</span>
-									<CountryFlag teamId={match.awayTeam?.id} />
-									{match.awayTeam?.code ?? 'TBD'}
-								</span>
+								<div class="min-w-0">
+									<span class="flex items-center gap-1.5 text-sm">
+										<CountryFlag teamId={match.homeTeam?.id} />
+										{match.homeTeam?.code ?? 'TBD'}
+										<span class="text-subtle">{m.vs()}</span>
+										<CountryFlag teamId={match.awayTeam?.id} />
+										{match.awayTeam?.code ?? 'TBD'}
+									</span>
+									{#if match.stadium}
+										<p class="mt-0.5 truncate text-xs text-muted">
+											{formatStadiumLabel(match.stadium, getLocale())}
+										</p>
+									{/if}
+								</div>
 								<MatchCountdown
 									kickoffAt={match.kickoffAt}
 									class="shrink-0 text-xs text-subtle"

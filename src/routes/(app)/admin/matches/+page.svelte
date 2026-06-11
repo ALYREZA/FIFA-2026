@@ -2,6 +2,8 @@
 	import { resolve } from '$app/paths';
 	import { invalidateAll } from '$app/navigation';
 	import CountryFlag from '$lib/components/CountryFlag.svelte';
+	import { formatStadiumLabel } from '$lib/format-stadium';
+	import { getLocale } from '$lib/paraglide/runtime';
 	import * as m from '$lib/paraglide/messages';
 
 	let { data, form } = $props();
@@ -89,9 +91,16 @@
 			{@const homeScore = match.homeScore ?? 0}
 			{@const awayScore = match.awayScore ?? 0}
 			<div class="card p-4">
-				<div class="mb-2 flex justify-between text-xs text-subtle">
+				<div class="mb-2 flex flex-wrap justify-between gap-2 text-xs text-subtle">
 					<span>{match.stage?.name}</span>
-					<span>{match.kickoffAt.toLocaleString()}</span>
+					<div class="text-end">
+						<span class="block">{match.kickoffAt.toLocaleString()}</span>
+						{#if match.stadium}
+							<span class="block text-muted">
+								{formatStadiumLabel(match.stadium, getLocale())}
+							</span>
+						{/if}
+					</div>
 				</div>
 				<div class="flex flex-wrap items-center gap-3">
 					<span class="flex min-w-24 items-center gap-1.5 text-sm">

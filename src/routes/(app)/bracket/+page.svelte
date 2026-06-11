@@ -1,6 +1,9 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import CountryFlag from '$lib/components/CountryFlag.svelte';
+	import { formatKickoffAt } from '$lib/format-datetime';
+	import { formatStadiumLabel } from '$lib/format-stadium';
+	import { getLocale } from '$lib/paraglide/runtime';
 	import * as m from '$lib/paraglide/messages';
 
 	let { data } = $props();
@@ -18,9 +21,19 @@
 		<div class="space-y-4">
 			{#each data.bracket as match (match.id)}
 				<div class="card p-4 sm:p-5">
-					<p class="mb-3 text-xs font-medium tracking-wide text-accent-text uppercase">
-						{match.stageName}
-					</p>
+					<div class="mb-3 flex flex-wrap items-baseline justify-between gap-2">
+						<p class="text-xs font-medium tracking-wide text-accent-text uppercase">
+							{match.stageName}
+						</p>
+						<div class="text-end text-xs text-subtle">
+							<span class="block">{formatKickoffAt(match.kickoffAt)}</span>
+							{#if match.stadium}
+								<span class="block text-muted">
+									{formatStadiumLabel(match.stadium, getLocale())}
+								</span>
+							{/if}
+						</div>
+					</div>
 					<div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
 						<div class="flex items-center gap-2">
 							<CountryFlag teamId={match.homeTeam?.id} class="text-xl" />

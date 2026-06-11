@@ -8,6 +8,7 @@ import {
 	getTournamentTeams
 } from '$lib/server/forecast/tournament';
 import { resolveBracketTeams, type BracketMatch } from '$lib/server/forecast/rules/bracket';
+import { attachStadium } from '$lib/server/forecast/stadiums';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals, platform }) => {
@@ -49,14 +50,15 @@ export const load: PageServerLoad = async ({ locals, platform }) => {
 		const resolvedTeams = resolved[match.id];
 		const prediction = predictions[match.id];
 
-		return {
+		return attachStadium({
 			id: match.id,
+			stadiumId: match.stadiumId,
 			stageName: stage.name,
 			homeTeam: resolvedTeams?.homeTeamId ? teamMap[resolvedTeams.homeTeamId] : null,
 			awayTeam: resolvedTeams?.awayTeamId ? teamMap[resolvedTeams.awayTeamId] : null,
 			prediction: prediction ?? null,
 			kickoffAt: match.kickoffAt
-		};
+		});
 	});
 
 	return { tournament, bracket };
