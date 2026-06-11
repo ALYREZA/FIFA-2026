@@ -4,11 +4,19 @@
  * or when pending schema migrations are missing.
  */
 import { spawnSync } from 'node:child_process';
+import { copyFileSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const wrangler = join(root, 'scripts/wrangler.mjs');
+
+const devVars = join(root, '.dev.vars');
+const devVarsExample = join(root, '.dev.vars.example');
+if (!existsSync(devVars) && existsSync(devVarsExample)) {
+	console.log('Creating .dev.vars from .dev.vars.example');
+	copyFileSync(devVarsExample, devVars);
+}
 
 function runWrangler(args) {
 	const result = spawnSync(process.execPath, [wrangler, ...args], {

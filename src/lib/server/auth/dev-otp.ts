@@ -1,5 +1,3 @@
-import { env } from '$env/dynamic/private';
-
 const OTP_PATTERN = /^\d{6}$/;
 
 function isLocalOrigin(origin: string): boolean {
@@ -12,11 +10,14 @@ function isLocalOrigin(origin: string): boolean {
 }
 
 /** Dev-only static OTP when `DEV_OTP_CODE` is set and `ORIGIN` is local. */
-export function getDevOtpCode(): string | null {
-	const code = env.DEV_OTP_CODE?.trim();
+export function getDevOtpCode(
+	workerEnv: Pick<Cloudflare.Env, 'ORIGIN' | 'DEV_OTP_CODE'>
+): string | null {
+	const code = workerEnv.DEV_OTP_CODE?.trim();
 	if (!code) return null;
 
-	if (!isLocalOrigin(env.ORIGIN ?? '')) {
+	const origin = workerEnv.ORIGIN?.trim() ?? '';
+	if (!isLocalOrigin(origin)) {
 		console.warn('[auth] DEV_OTP_CODE is set but ignored because ORIGIN is not local');
 		return null;
 	}
@@ -28,4 +29,3 @@ export function getDevOtpCode(): string | null {
 
 	return code;
 }
-

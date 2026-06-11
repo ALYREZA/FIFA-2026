@@ -53,11 +53,22 @@ export async function seedTournamentIfNeeded(db: Database) {
 	const [existing] = await db.select().from(tournaments).limit(1);
 	if (existing) {
 		const needsReseed = storedSeedVersion(existing.scoringRules) < SEED_VERSION;
-		const [{ count }] = await db
-			.select({ count: sql<number>`count(*)` })
-			.from(teams)
-			.where(eq(teams.tournamentId, TOURNAMENT_ID));
-		if (!needsReseed && Number(count) >= 48) return existing;
+		const [[{ teamCount }], [{ matchCount }]] = await Promise.all([
+			db
+				.select({ teamCount: sql<number>`count(*)` })
+				.from(teams)
+				.where(eq(teams.tournamentId, TOURNAMENT_ID)),
+			db
+				.select({ matchCount: sql<number>`count(*)` })
+				.from(matches)
+				.where(eq(matches.tournamentId, TOURNAMENT_ID))
+		]);
+
+		const isComplete =
+			Number(teamCount) >= FIFA_2026_TEAMS.length &&
+			Number(matchCount) >= FIFA_2026_MATCHES.length;
+
+		if (!needsReseed && isComplete) return existing;
 		return seedFullTournament(db, true);
 	}
 

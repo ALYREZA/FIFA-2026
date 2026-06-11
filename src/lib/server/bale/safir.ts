@@ -1,5 +1,3 @@
-import { env } from '$env/dynamic/private';
-
 const SAFIR_BASE = 'https://safir.bale.ai/api/v2';
 
 type BaleError = {
@@ -22,13 +20,15 @@ export class BaleOtpError extends Error {
 
 let cachedToken: { accessToken: string; expiresAt: number } | null = null;
 
-async function getAccessToken(): Promise<string> {
+async function getAccessToken(
+	workerEnv: Pick<Cloudflare.Env, 'BALE_CLIENT_ID' | 'BALE_CLIENT_SECRET'>
+): Promise<string> {
 	if (cachedToken && Date.now() < cachedToken.expiresAt - 60_000) {
 		return cachedToken.accessToken;
 	}
 
-	const clientId = env.BALE_CLIENT_ID;
-	const clientSecret = env.BALE_CLIENT_SECRET;
+	const clientId = workerEnv.BALE_CLIENT_ID;
+	const clientSecret = workerEnv.BALE_CLIENT_SECRET;
 
 	if (!clientId || !clientSecret) {
 		throw new BaleOtpError('Bale credentials are not configured', 'config_missing');
@@ -88,8 +88,12 @@ function mapBaleError(error: BaleError, status: number): BaleOtpError {
 	return new BaleOtpError(error.message ?? 'Failed to send OTP via Bale', 'send_failed');
 }
 
-export async function sendBaleOtp(phone: string, otp: number): Promise<void> {
-	const token = await getAccessToken();
+export async function sendBaleOtp(
+	phone: string,
+	otp: number,
+	workerEnv: Pick<Cloudflare.Env, 'BALE_CLIENT_ID' | 'BALE_CLIENT_SECRET'>
+): Promise<void> {
+	const token = await getAccessToken(workerEnv);
 
 	const response = await fetch(`${SAFIR_BASE}/send_otp`, {
 		method: 'POST',

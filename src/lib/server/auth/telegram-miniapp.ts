@@ -2,7 +2,7 @@ import type { BetterAuthPlugin } from 'better-auth';
 import { APIError, createAuthEndpoint } from 'better-auth/api';
 import { setSessionCookie } from 'better-auth/cookies';
 import { parseUserOutput } from 'better-auth/db';
-import { env } from '$env/dynamic/private';
+import { getWorkerEnv } from '$lib/server/worker-env';
 import { validateTelegramInitData } from '$lib/server/telegram/validate-init-data';
 import * as z from 'zod';
 
@@ -31,7 +31,7 @@ export function telegramMiniApp(): BetterAuthPlugin {
 					body: signInTelegramBodySchema
 				},
 				async (ctx) => {
-					const botToken = env.TELEGRAM_BOT_TOKEN;
+					const botToken = getWorkerEnv().TELEGRAM_BOT_TOKEN;
 					if (!botToken) {
 						throw new APIError('INTERNAL_SERVER_ERROR', {
 							message: 'Telegram auth is not configured'
