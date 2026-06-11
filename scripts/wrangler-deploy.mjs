@@ -1,9 +1,6 @@
 #!/usr/bin/env node
 /**
- * Run `wrangler types` with a deterministic result for CI and local check.
- * Hides .dev.vars, .env, and .svelte-kit/cloudflare so output matches a fresh checkout.
- * Use `--write` to regenerate worker-configuration.d.ts; default is `--check`.
- * Runtime secrets are typed in src/env.d.ts.
+ * Deploy with .dev.vars / .env hidden so wrangler's types check matches worker-configuration.d.ts.
  */
 import { spawnSync } from 'node:child_process';
 import { dirname, join } from 'node:path';
@@ -11,15 +8,13 @@ import { fileURLToPath } from 'node:url';
 import { hideWranglerEnvFiles, restoreWranglerEnvFiles } from './wrangler-env-isolation.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const write = process.argv.includes('--write');
-const hidden = hideWranglerEnvFiles(root, { includeBuildOutput: true });
-const wranglerArgs = write ? ['types'] : ['types', '--check'];
+const hidden = hideWranglerEnvFiles(root);
 
 let exitCode;
 try {
 	const result = spawnSync(
 		process.execPath,
-		[join(root, 'scripts/wrangler.mjs'), ...wranglerArgs],
+		[join(root, 'scripts/wrangler.mjs'), 'deploy', ...process.argv.slice(2)],
 		{
 			cwd: root,
 			env: process.env,

@@ -15,7 +15,7 @@
 	"preview_urls": true,
 	"d1_databases": [
 		{
-			"binding": "fifa_2026",
+			"binding": "DB",
 			"database_name": "fifa-2026",
 			"database_id": "23e5f50e-68ab-4c22-ac39-f7b531a89331",
 			"remote": true
