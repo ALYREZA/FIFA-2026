@@ -2,7 +2,10 @@
 	"$schema": "./node_modules/wrangler/config-schema.json",
 	"name": "fifa-2026",
 	"compatibility_date": "2026-06-07",
-	"compatibility_flags": ["nodejs_compat", "nodejs_als"],
+	"compatibility_flags": [
+		"nodejs_compat",
+		"nodejs_als"
+	],
 	"main": ".svelte-kit/cloudflare/_worker.js",
 	"assets": {
 		"binding": "ASSETS",
@@ -12,9 +15,10 @@
 	"preview_urls": true,
 	"d1_databases": [
 		{
-			"binding": "DB",
+			"binding": "fifa_2026",
 			"database_name": "fifa-2026",
-			"database_id": "00000000-0000-0000-0000-000000000001"
+			"database_id": "23e5f50e-68ab-4c22-ac39-f7b531a89331",
+			"remote": true
 		}
 	],
 	// Wrangler rebundles SvelteKit server output. Alias runtime deps to local
