@@ -7,3 +7,5 @@ BALE_CLIENT_ID=
 BALE_CLIENT_SECRET=
 TELEGRAM_BOT_TOKEN=
 ADMIN_PHONE_NUMBERS=
+# Optional: fixed 6-digit code for local login (only works when ORIGIN is localhost)
+DEV_OTP_CODE=123456

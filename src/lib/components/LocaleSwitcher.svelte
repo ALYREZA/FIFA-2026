@@ -20,7 +20,7 @@
 		<button
 			type="button"
 			onclick={() => handleLocaleChange(locale)}
-			class="rounded-md px-2 py-1 text-xs transition {getLocale() === locale
+			class="min-h-9 rounded-md px-2.5 py-1.5 text-xs transition {getLocale() === locale
 				? 'bg-accent text-on-accent'
 				: 'text-muted hover:text-accent-text'}"
 		>

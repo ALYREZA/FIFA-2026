@@ -2,6 +2,7 @@
 	import type { Pathname } from '$app/types';
 	import { resolve } from '$app/paths';
 	import CountryFlag from '$lib/components/CountryFlag.svelte';
+	import MatchCountdown from '$lib/components/MatchCountdown.svelte';
 	import * as m from '$lib/paraglide/messages';
 
 	let { data } = $props();
@@ -16,31 +17,31 @@
 {:else}
 	<div class="space-y-6">
 		<section>
-			<h1 class="text-3xl font-bold text-foreground">{data.tournament.name}</h1>
+			<h1 class="text-2xl font-bold text-foreground sm:text-3xl">{data.tournament.name}</h1>
 			<p class="mt-2 text-muted">{m.dashboard_intro()}</p>
 		</section>
 
 		<div class="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
 			<div class="card p-4 sm:p-5">
-				<p class="text-sm text-muted">{m.dashboard_your_points()}</p>
+				<p class="text-xs text-muted sm:text-sm">{m.dashboard_your_points()}</p>
 				<p class="mt-1 text-2xl font-bold text-accent-text sm:text-3xl">
 					{data.myScore?.totalPoints ?? 0}
 				</p>
 			</div>
 			<div class="card p-4 sm:p-5">
-				<p class="text-sm text-muted">{m.dashboard_predictions_made()}</p>
+				<p class="text-xs text-muted sm:text-sm">{m.dashboard_predictions_made()}</p>
 				<p class="mt-1 text-2xl font-bold text-foreground sm:text-3xl">
 					{data.predictionCount} / {data.totalMatches}
 				</p>
 			</div>
 			<div class="card p-4 sm:p-5">
-				<p class="text-sm text-muted">{m.dashboard_exact_scores()}</p>
+				<p class="text-xs text-muted sm:text-sm">{m.dashboard_exact_scores()}</p>
 				<p class="mt-1 text-2xl font-bold text-highlight sm:text-3xl">
 					{data.myScore?.exactScores ?? 0}
 				</p>
 			</div>
 			<div class="card p-4 sm:p-5">
-				<p class="text-sm text-muted">{m.dashboard_correct_results()}</p>
+				<p class="text-xs text-muted sm:text-sm">{m.dashboard_correct_results()}</p>
 				<p class="mt-1 text-2xl font-bold text-foreground sm:text-3xl">
 					{data.myScore?.correctResults ?? 0}
 				</p>
@@ -55,17 +56,18 @@
 				{:else}
 					<ul class="space-y-3">
 						{#each data.upcoming as match (match.id)}
-							<li class="list-row flex items-center justify-between px-4 py-3">
-								<span class="flex items-center gap-1.5 text-sm">
+							<li class="list-row flex flex-wrap items-center justify-between gap-2 px-4 py-3">
+								<span class="flex min-w-0 items-center gap-1.5 text-sm">
 									<CountryFlag teamId={match.homeTeam?.id} />
 									{match.homeTeam?.code ?? 'TBD'}
 									<span class="text-subtle">{m.vs()}</span>
 									<CountryFlag teamId={match.awayTeam?.id} />
 									{match.awayTeam?.code ?? 'TBD'}
 								</span>
-								<span class="text-xs text-subtle">
-									{match.kickoffAt.toLocaleDateString()}
-								</span>
+								<MatchCountdown
+									kickoffAt={match.kickoffAt}
+									class="shrink-0 text-xs text-subtle"
+								/>
 							</li>
 						{/each}
 					</ul>

@@ -73,6 +73,7 @@ cp .env.example .env
 | `BALE_CLIENT_ID`      | `.dev.vars` | Bale Safir client ID                                    |
 | `BALE_CLIENT_SECRET`  | `.dev.vars` | Bale Safir client secret                                |
 | `ADMIN_PHONE_NUMBERS` | `.dev.vars` | Admin phones (comma-separated, format `989XXXXXXXXX`)   |
+| `DEV_OTP_CODE`        | `.dev.vars` | Optional fixed 6-digit login code for local preview only (requires `ORIGIN` on localhost; skips Bale) |
 | `CLOUDFLARE_*`        | `.env` only | Required for remote `db:push` / `db:migrate` only       |
 
 ### 3. Initialize local database

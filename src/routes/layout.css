@@ -92,16 +92,30 @@ html[data-telegram-theme][data-color-scheme='dark'] {
 	color-scheme: dark;
 }
 
-html[data-telegram-theme] .safe-area-top {
-	padding-top: max(0.75rem, env(safe-area-inset-top));
+.safe-area-top {
+	padding-top: max(0.75rem, env(safe-area-inset-top, 0px));
 }
 
-html[data-telegram-theme] .safe-area-bottom {
-	padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+.safe-area-bottom {
+	padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
 }
 
-html[data-telegram-theme] .safe-area-x {
-	padding-inline: max(1rem, env(safe-area-inset-left), env(safe-area-inset-right));
+.safe-area-x {
+	padding-inline: max(0px, env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px));
+}
+
+.safe-area-padding-x {
+	padding-inline: max(1rem, env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px));
+}
+
+.pb-mobile-nav {
+	padding-bottom: calc(5rem + max(0.75rem, env(safe-area-inset-bottom, 0px)));
+}
+
+@media (min-width: 1024px) {
+	.pb-mobile-nav {
+		padding-bottom: 1.5rem;
+	}
 }
 
 @media (prefers-color-scheme: dark) {

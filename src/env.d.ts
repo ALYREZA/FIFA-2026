@@ -11,6 +11,7 @@ declare namespace Cloudflare {
 		BALE_CLIENT_SECRET: string;
 		ADMIN_PHONE_NUMBERS: string;
 		TELEGRAM_BOT_TOKEN: string;
+		DEV_OTP_CODE?: string;
 	}
 }
 

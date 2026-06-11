@@ -6,6 +6,7 @@ import { env } from '$env/dynamic/private';
 import { getRequestEvent } from '$app/server';
 import { getDb } from '$lib/server/db';
 import { telegramMiniApp } from '$lib/server/auth/telegram-miniapp';
+import { getDevOtpCode } from '$lib/server/auth/dev-otp';
 import { sendBaleOtp } from '$lib/server/bale/safir';
 import { isValidBalePhone } from '$lib/server/phone';
 
@@ -34,7 +35,22 @@ const authConfig = {
 				getTempEmail: (phone) => `${phone}@bale.local`,
 				getTempName: (phone) => phone
 			},
-			sendOTP: async ({ phoneNumber: phone, code }) => {
+			sendOTP: async ({ phoneNumber: phone, code }, ctx) => {
+				const devOtp = getDevOtpCode();
+				if (devOtp) {
+					if (ctx) {
+						const stored = await ctx.context.internalAdapter.findVerificationValue(phone);
+						if (stored) {
+							await ctx.context.internalAdapter.updateVerificationValue(stored.id, {
+								value: `${devOtp}:0`
+							});
+						}
+					}
+
+					console.info(`[dev-otp] Login code for ${phone}: ${devOtp}`);
+					return;
+				}
+
 				await sendBaleOtp(phone, Number(code));
 			}
 		}),
