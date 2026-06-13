@@ -68,7 +68,7 @@ function matchSeedValues(match: (typeof FIFA_2026_MATCHES)[number]) {
 	};
 }
 
-let seedInFlight: Promise<(typeof tournaments.$inferSelect) | undefined> | null = null;
+let seedInFlight: Promise<typeof tournaments.$inferSelect | undefined> | null = null;
 
 export async function seedTournamentIfNeeded(db: Database) {
 	if (seedInFlight) return seedInFlight;
@@ -166,10 +166,7 @@ async function backfillTournament(db: Database) {
 
 	const missingMatches = FIFA_2026_MATCHES.filter((match) => !existingMatchIds.has(match.id));
 	if (missingMatches.length > 0) {
-		await db
-			.insert(matches)
-			.values(missingMatches.map(matchSeedValues))
-			.onConflictDoNothing();
+		await db.insert(matches).values(missingMatches.map(matchSeedValues)).onConflictDoNothing();
 	}
 
 	const [tournament] = await db
