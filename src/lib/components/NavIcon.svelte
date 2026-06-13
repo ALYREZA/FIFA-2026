@@ -33,13 +33,13 @@
 	{:else if name === 'standings'}
 		<path d="M4 19V5M4 19h16M8 19V9M12 19V13M16 19V7" />
 	{:else if name === 'bracket'}
-		<path d="M6 6h4v4H8a2 2 0 0 0-2 2v2H6V6ZM14 6h4v6h-2a2 2 0 0 0-2 2v5h-4v-4h2a2 2 0 0 0 2-2V6Z" />
+		<path
+			d="M6 6h4v4H8a2 2 0 0 0-2 2v2H6V6ZM14 6h4v6h-2a2 2 0 0 0-2 2v5h-4v-4h2a2 2 0 0 0 2-2V6Z"
+		/>
 	{:else if name === 'leaderboard'}
 		<path d="M8 21V10M12 21V6M16 21V14M6 10h12L12 3 6 10Z" />
 	{:else if name === 'extras'}
-		<path
-			d="M12 3l2.2 4.5 5 .7-3.6 3.5.9 5-4.5-2.4-4.5 2.4.9-5L4.8 8.2l5-.7L12 3Z"
-		/>
+		<path d="M12 3l2.2 4.5 5 .7-3.6 3.5.9 5-4.5-2.4-4.5 2.4.9-5L4.8 8.2l5-.7L12 3Z" />
 	{:else if name === 'podium'}
 		<path d="M8 21V11H4v10M12 21V7h4v14M20 21V15h-4v6" />
 	{:else if name === 'rules'}

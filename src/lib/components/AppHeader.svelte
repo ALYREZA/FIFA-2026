@@ -137,7 +137,10 @@
 			<span class="text-base font-bold text-accent-text sm:text-lg">{m.app_title()}</span>
 		</a>
 
-		<nav class="hidden min-w-0 flex-1 items-center justify-center gap-0.5 lg:flex" aria-label="Main">
+		<nav
+			class="hidden min-w-0 flex-1 items-center justify-center gap-0.5 lg:flex"
+			aria-label="Main"
+		>
 			{#each primaryNav as item (item.href)}
 				{@const active = isActive(item.href, page.url.pathname)}
 				<a
@@ -154,7 +157,9 @@
 			<div class="relative" data-nav-dropdown>
 				<button
 					type="button"
-					class="{navLinkClass} {isSecondaryActive(page.url.pathname) ? navActiveClass : navIdleClass}"
+					class="{navLinkClass} {isSecondaryActive(page.url.pathname)
+						? navActiveClass
+						: navIdleClass}"
 					aria-expanded={desktopMoreOpen}
 					aria-haspopup="menu"
 					onclick={toggleDesktopMore}
@@ -238,11 +243,7 @@
 							<p class="mb-1.5 px-2 text-xs text-subtle">{m.nav_language()}</p>
 							<LocaleSwitcher />
 						</div>
-						<button
-							type="button"
-							class="btn-ghost w-full min-h-11 text-sm"
-							onclick={handleSignOut}
-						>
+						<button type="button" class="btn-ghost min-h-11 w-full text-sm" onclick={handleSignOut}>
 							{m.sign_out()}
 						</button>
 					</div>
@@ -253,11 +254,7 @@
 </header>
 
 {#if mobileMoreOpen}
-	<div
-		class="fixed inset-0 z-40 lg:hidden"
-		role="presentation"
-		onclick={closeMenus}
-	></div>
+	<div class="fixed inset-0 z-40 lg:hidden" role="presentation" onclick={closeMenus}></div>
 {/if}
 
 <nav
@@ -290,10 +287,7 @@
 			</a>
 		{/each}
 
-		<div
-			class="relative min-h-11 min-w-0 flex-1 self-stretch sm:min-h-12"
-			data-nav-dropdown
-		>
+		<div class="relative min-h-11 min-w-0 flex-1 self-stretch sm:min-h-12" data-nav-dropdown>
 			<button
 				type="button"
 				class="{mobileTabBaseClass} {isSecondaryActive(page.url.pathname)

@@ -73,10 +73,7 @@
 										</p>
 									{/if}
 								</div>
-								<MatchCountdown
-									kickoffAt={match.kickoffAt}
-									class="shrink-0 text-xs text-subtle"
-								/>
+								<MatchCountdown kickoffAt={match.kickoffAt} class="shrink-0 text-xs text-subtle" />
 							</li>
 						{/each}
 					</ul>

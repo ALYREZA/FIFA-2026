@@ -2,7 +2,6 @@
  * Worker secrets and runtime env vars (set via wrangler secret put / .dev.vars locally).
  * Kept separate from worker-configuration.d.ts so `wrangler types --check` stays stable in CI.
  */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 declare namespace Cloudflare {
 	interface Env {
 		ORIGIN: string;

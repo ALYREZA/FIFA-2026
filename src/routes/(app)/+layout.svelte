@@ -7,7 +7,7 @@
 <div class="min-h-screen bg-background text-foreground">
 	<AppHeader isAdmin={data.isAdmin} username={data.user?.username} />
 
-	<main class="safe-area-padding-x mx-auto max-w-6xl pt-6 pb-mobile-nav lg:py-6">
+	<main class="safe-area-padding-x pb-mobile-nav mx-auto max-w-6xl pt-6 lg:py-6">
 		{@render children()}
 	</main>
 </div>

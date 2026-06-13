@@ -8,7 +8,10 @@ export function getAdminPhoneNumbers(workerEnv?: Cloudflare.Env): string[] {
 		.filter(Boolean);
 }
 
-export function isAdmin(phoneNumber: string | null | undefined, workerEnv?: Cloudflare.Env): boolean {
+export function isAdmin(
+	phoneNumber: string | null | undefined,
+	workerEnv?: Cloudflare.Env
+): boolean {
 	if (!phoneNumber) return false;
 	const admins = getAdminPhoneNumbers(workerEnv);
 	if (admins.length === 0) return false;

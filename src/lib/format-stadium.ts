@@ -12,10 +12,7 @@ export type StadiumDisplay = {
 	capacity: number;
 };
 
-export function formatStadiumLabel(
-	stadium: StadiumDisplay,
-	locale: string = getLocale()
-): string {
+export function formatStadiumLabel(stadium: StadiumDisplay, locale: string = getLocale()): string {
 	const name = locale === 'fa' ? stadium.nameFa : stadium.nameEn;
 	const city = locale === 'fa' ? stadium.cityFa : stadium.cityEn;
 	return `${name} · ${city}`;

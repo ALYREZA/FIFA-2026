@@ -66,15 +66,15 @@ Set at least `ORIGIN` and `BETTER_AUTH_SECRET`. Use the exact preview URL (defau
 cp .env.example .env
 ```
 
-| Variable              | Where       | Description                                             |
-| --------------------- | ----------- | ------------------------------------------------------- |
-| `ORIGIN`              | `.dev.vars` | App URL, e.g. `http://localhost:4173` for local preview |
-| `BETTER_AUTH_SECRET`  | `.dev.vars` | 32+ character random secret                             |
-| `BALE_CLIENT_ID`      | `.dev.vars` | Bale Safir client ID                                    |
-| `BALE_CLIENT_SECRET`  | `.dev.vars` | Bale Safir client secret                                |
-| `ADMIN_PHONE_NUMBERS` | `.dev.vars` | Admin phones (comma-separated, format `989XXXXXXXXX`)   |
+| Variable              | Where       | Description                                                                                           |
+| --------------------- | ----------- | ----------------------------------------------------------------------------------------------------- |
+| `ORIGIN`              | `.dev.vars` | App URL, e.g. `http://localhost:4173` for local preview                                               |
+| `BETTER_AUTH_SECRET`  | `.dev.vars` | 32+ character random secret                                                                           |
+| `BALE_CLIENT_ID`      | `.dev.vars` | Bale Safir client ID                                                                                  |
+| `BALE_CLIENT_SECRET`  | `.dev.vars` | Bale Safir client secret                                                                              |
+| `ADMIN_PHONE_NUMBERS` | `.dev.vars` | Admin phones (comma-separated, format `989XXXXXXXXX`)                                                 |
 | `DEV_OTP_CODE`        | `.dev.vars` | Optional fixed 6-digit login code for local preview only (requires `ORIGIN` on localhost; skips Bale) |
-| `CLOUDFLARE_*`        | `.env` only | Required for remote `db:push` / `db:migrate` only       |
+| `CLOUDFLARE_*`        | `.env` only | Required for remote `db:push` / `db:migrate` only                                                     |
 
 ### 3. Initialize local database
 

@@ -148,134 +148,134 @@
 	</header>
 
 	<main class="flex flex-1 items-center justify-center px-4 pb-8">
-	<div class="card w-full max-w-md border-header-border p-6 sm:p-8">
-		<div class="mb-8 text-center">
-			<h1 class="text-2xl font-bold text-accent-text">{m.login_title()}</h1>
-			<p class="mt-2 text-sm text-muted">
-				{#if step === 'username'}
-					{m.login_username_subtitle()}
-				{:else if step === 'telegram'}
-					{m.login_telegram_subtitle()}
-				{:else}
-					{m.login_subtitle()}
-				{/if}
-			</p>
-		</div>
-
-		{#if error || form?.usernameError}
-			<div class="alert-error mb-4 px-4 py-3">
-				{error || usernameErrorMessage(form?.usernameError)}
-			</div>
-		{/if}
-
-		{#if step === 'username'}
-			<form method="POST" action="?/setUsername" class="space-y-4">
-				<div>
-					<label for="username" class="label">{m.login_username_label()}</label>
-					<input
-						id="username"
-						name="username"
-						type="text"
-						bind:value={usernameInput}
-						placeholder={m.login_username_placeholder()}
-						dir="ltr"
-						autocapitalize="off"
-						autocomplete="username"
-						maxlength={USERNAME_RULES.maxLength}
-						class="input w-full px-4 py-3 placeholder:text-subtle"
-					/>
-					<p class="mt-1 text-xs text-subtle">{m.login_username_hint()}</p>
-				</div>
-
-				<button
-					type="submit"
-					disabled={loading || usernameInput.trim().length < USERNAME_RULES.minLength}
-					class="btn-primary w-full py-3"
-				>
-					{loading ? m.login_username_saving() : m.login_username_continue()}
-				</button>
-			</form>
-		{:else if step === 'phone'}
-			<form
-				onsubmit={(e) => {
-					e.preventDefault();
-					handleSendOtp();
-				}}
-				class="space-y-4"
-			>
-				<div>
-					<label for="phone" class="label">{m.login_phone_label()}</label>
-					<input
-						id="phone"
-						type="tel"
-						bind:value={phoneInput}
-						placeholder={m.login_phone_placeholder()}
-						dir="ltr"
-						class="input w-full px-4 py-3 placeholder:text-subtle"
-					/>
-					<p class="mt-1 text-xs text-subtle">{m.login_phone_hint()}</p>
-				</div>
-
-				<button type="submit" disabled={loading} class="btn-primary w-full py-3">
-					{loading ? m.login_sending() : m.login_send_otp()}
-				</button>
-			</form>
-		{:else if step === 'telegram'}
-			<div class="space-y-4 py-6 text-center">
-				<p class="text-sm text-muted">
-					{loading ? m.login_telegram_signing_in() : m.login_telegram_subtitle()}
+		<div class="card w-full max-w-md border-header-border p-6 sm:p-8">
+			<div class="mb-8 text-center">
+				<h1 class="text-2xl font-bold text-accent-text">{m.login_title()}</h1>
+				<p class="mt-2 text-sm text-muted">
+					{#if step === 'username'}
+						{m.login_username_subtitle()}
+					{:else if step === 'telegram'}
+						{m.login_telegram_subtitle()}
+					{:else}
+						{m.login_subtitle()}
+					{/if}
 				</p>
-				{#if !loading && error}
-					<button type="button" onclick={handleTelegramSignIn} class="btn-primary w-full py-3">
-						{m.login_telegram_retry()}
+			</div>
+
+			{#if error || form?.usernameError}
+				<div class="alert-error mb-4 px-4 py-3">
+					{error || usernameErrorMessage(form?.usernameError)}
+				</div>
+			{/if}
+
+			{#if step === 'username'}
+				<form method="POST" action="?/setUsername" class="space-y-4">
+					<div>
+						<label for="username" class="label">{m.login_username_label()}</label>
+						<input
+							id="username"
+							name="username"
+							type="text"
+							bind:value={usernameInput}
+							placeholder={m.login_username_placeholder()}
+							dir="ltr"
+							autocapitalize="off"
+							autocomplete="username"
+							maxlength={USERNAME_RULES.maxLength}
+							class="input w-full px-4 py-3 placeholder:text-subtle"
+						/>
+						<p class="mt-1 text-xs text-subtle">{m.login_username_hint()}</p>
+					</div>
+
+					<button
+						type="submit"
+						disabled={loading || usernameInput.trim().length < USERNAME_RULES.minLength}
+						class="btn-primary w-full py-3"
+					>
+						{loading ? m.login_username_saving() : m.login_username_continue()}
 					</button>
-				{/if}
-			</div>
-		{:else}
-			<form
-				onsubmit={(e) => {
-					e.preventDefault();
-					handleVerifyOtp();
-				}}
-				class="space-y-4"
-			>
-				<p class="text-center text-sm text-muted">
-					{m.login_code_sent({ phone: phoneInput })}
-				</p>
+				</form>
+			{:else if step === 'phone'}
+				<form
+					onsubmit={(e) => {
+						e.preventDefault();
+						handleSendOtp();
+					}}
+					class="space-y-4"
+				>
+					<div>
+						<label for="phone" class="label">{m.login_phone_label()}</label>
+						<input
+							id="phone"
+							type="tel"
+							bind:value={phoneInput}
+							placeholder={m.login_phone_placeholder()}
+							dir="ltr"
+							class="input w-full px-4 py-3 placeholder:text-subtle"
+						/>
+						<p class="mt-1 text-xs text-subtle">{m.login_phone_hint()}</p>
+					</div>
 
-				<div>
-					<label for="otp" class="label">{m.login_code_label()}</label>
-					<input
-						id="otp"
-						type="text"
-						inputmode="numeric"
-						maxlength="6"
-						bind:value={otpCode}
-						placeholder="123456"
-						dir="ltr"
-						class="input w-full px-4 py-3 text-center text-2xl tracking-widest"
-					/>
+					<button type="submit" disabled={loading} class="btn-primary w-full py-3">
+						{loading ? m.login_sending() : m.login_send_otp()}
+					</button>
+				</form>
+			{:else if step === 'telegram'}
+				<div class="space-y-4 py-6 text-center">
+					<p class="text-sm text-muted">
+						{loading ? m.login_telegram_signing_in() : m.login_telegram_subtitle()}
+					</p>
+					{#if !loading && error}
+						<button type="button" onclick={handleTelegramSignIn} class="btn-primary w-full py-3">
+							{m.login_telegram_retry()}
+						</button>
+					{/if}
 				</div>
-
-				<button
-					type="submit"
-					disabled={loading || otpCode.length < 6}
-					class="btn-primary w-full py-3"
+			{:else}
+				<form
+					onsubmit={(e) => {
+						e.preventDefault();
+						handleVerifyOtp();
+					}}
+					class="space-y-4"
 				>
-					{loading ? m.login_verifying() : m.login_verify()}
-				</button>
+					<p class="text-center text-sm text-muted">
+						{m.login_code_sent({ phone: phoneInput })}
+					</p>
 
-				<button
-					type="button"
-					onclick={handleBack}
-					class="w-full text-sm text-muted hover:text-accent-text"
-				>
-					{m.login_change_phone()}
-				</button>
-			</form>
-		{/if}
+					<div>
+						<label for="otp" class="label">{m.login_code_label()}</label>
+						<input
+							id="otp"
+							type="text"
+							inputmode="numeric"
+							maxlength="6"
+							bind:value={otpCode}
+							placeholder="123456"
+							dir="ltr"
+							class="input w-full px-4 py-3 text-center text-2xl tracking-widest"
+						/>
+					</div>
 
-		<p class="mt-6 text-center text-xs text-subtle">{m.login_disclaimer()}</p>
-	</div>
+					<button
+						type="submit"
+						disabled={loading || otpCode.length < 6}
+						class="btn-primary w-full py-3"
+					>
+						{loading ? m.login_verifying() : m.login_verify()}
+					</button>
+
+					<button
+						type="button"
+						onclick={handleBack}
+						class="w-full text-sm text-muted hover:text-accent-text"
+					>
+						{m.login_change_phone()}
+					</button>
+				</form>
+			{/if}
+
+			<p class="mt-6 text-center text-xs text-subtle">{m.login_disclaimer()}</p>
+		</div>
 	</main>
 </div>

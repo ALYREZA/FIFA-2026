@@ -65,8 +65,7 @@ export async function seedTournamentIfNeeded(db: Database) {
 		]);
 
 		const isComplete =
-			Number(teamCount) >= FIFA_2026_TEAMS.length &&
-			Number(matchCount) >= FIFA_2026_MATCHES.length;
+			Number(teamCount) >= FIFA_2026_TEAMS.length && Number(matchCount) >= FIFA_2026_MATCHES.length;
 
 		if (!needsReseed && isComplete) return existing;
 		return seedFullTournament(db, true);

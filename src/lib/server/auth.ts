@@ -31,10 +31,7 @@ function resolveSecret(workerEnv: Cloudflare.Env): string {
 	if (secret && secret.length >= 32) return secret;
 
 	const origin = workerEnv.ORIGIN ?? '';
-	const isLocal =
-		origin.includes('localhost') ||
-		origin.includes('127.0.0.1') ||
-		!origin;
+	const isLocal = origin.includes('localhost') || origin.includes('127.0.0.1') || !origin;
 
 	if (isLocal) {
 		console.warn('[auth] BETTER_AUTH_SECRET missing — using local dev fallback');
