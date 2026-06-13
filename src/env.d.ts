@@ -14,5 +14,3 @@ declare namespace Cloudflare {
 		DEV_OTP_CODE?: string;
 	}
 }
-
-export { };

@@ -117,5 +117,6 @@ export const auth = createAuth({
 	BALE_CLIENT_SECRET: '',
 	TELEGRAM_BOT_TOKEN: '',
 	ADMIN_PHONE_NUMBERS: '',
-	DB: null!
+	DB: null!,
+	ASSETS: null!
 } as Cloudflare.Env);
